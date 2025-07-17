@@ -125,9 +125,40 @@ docker compose run --rm backup
 
 ## 4. Manual Operations
 
-If you need to perform a manual operation (like listing snapshots or restoring a file), you must override the entrypoint to run `restic` directly. You can do this with the `--entrypoint` flag:
+### Using Justfile Recipes (Recommended)
 
-### Listing Snapshots
+This project includes convenient justfile recipes for common restic operations. These recipes can be executed from the project root directory, making it easy to manage your backups:
+
+```bash
+# List all snapshots
+just restic-snapshots
+
+# Check repository integrity
+just restic-check
+
+# List files in the latest snapshot
+just restic-ls
+
+# List files in a specific snapshot
+just restic-ls snapshot_id=73e326a6
+
+# Compare two snapshots
+just restic-diff snapshot_id1=latest~1 snapshot_id2=latest
+
+# Show repository stats
+just restic-stats
+
+# Restore a specific file for verification
+just restic-verify-file file_path="/source/path/to/file"
+```
+
+These justfile recipes execute bash scripts located in the `dataops/docker/scripts` directory, which handle environment variable loading and proper command execution.
+
+### Using Docker Compose Directly
+
+Alternatively, if you need to perform a manual operation directly (like listing snapshots or restoring a file), you can override the entrypoint to run `restic` directly with the `--entrypoint` flag:
+
+#### Listing Snapshots
 
 To see all the snapshots in your repository:
 
