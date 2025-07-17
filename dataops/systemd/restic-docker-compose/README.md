@@ -21,13 +21,13 @@ This setup connects to your NAS via SFTP (SSH). You will need to configure the c
 
    ```bash
    # Example using an existing key
-   cp /path/to/your/private_key /home/nic/projects/personal/homelab-mono/dataops/docker/.ssh/id_rsa
+   cp /path/to/your/private_key /home/nic/projects/personal/homelab-mono/dataops/systemd/restic-docker-compose/.ssh/id_rsa
    ```
 
 3. **Set Permissions:** SSH requires that the private key file has strict permissions. Set them now.
 
    ```bash
-   chmod 600 /home/nic/projects/personal/homelab-mono/dataops/docker/.ssh/id_rsa
+   chmod 600 /home/nic/projects/personal/homelab-mono/dataops/systemd/restic-docker-compose/.ssh/id_rsa
    ```
 
 ### b. Create and Configure Environment Files
@@ -50,9 +50,9 @@ This setup connects to your NAS via SFTP (SSH). You will need to configure the c
 
    ```bash
    # Use a strong, unique password
-   echo "your-super-secret-password" > /home/nic/projects/personal/homelab-mono/dataops/docker/.restic-password
+   echo "your-super-secret-password" > /home/nic/projects/personal/homelab-mono/dataops/systemd/restic-docker-compose/.restic-password
    # Set permissions to be safe
-   chmod 600 /home/nic/projects/personal/homelab-mono/dataops/docker/.restic-password
+   chmod 600 /home/nic/projects/personal/homelab-mono/dataops/systemd/restic-docker-compose/.restic-password
    ```
 
    Ensure the `RESTIC_PASSWORD_FILE` variable in your `.env` file points to this file.
@@ -75,7 +75,7 @@ This setup includes `systemd` unit files to automate your backups. This is the r
 
    ```bash
    mkdir -p ~/.config/systemd/user
-   cp /home/nic/projects/personal/homelab-mono/dataops/docker/systemd/nas-backup.* ~/.config/systemd/user/
+   cp /home/nic/projects/personal/homelab-mono/dataops/systemd/restic-docker-compose/systemd/nas-backup.* ~/.config/systemd/user/
    ```
 
 2. **Reload the systemd Daemon**: Tell systemd to pick up the new files.
@@ -152,7 +152,7 @@ just restic-stats
 just restic-verify-file file_path="/source/path/to/file"
 ```
 
-These justfile recipes execute bash scripts located in the `dataops/docker/scripts` directory, which handle environment variable loading and proper command execution.
+These justfile recipes execute bash scripts located in the `dataops/systemd/restic-docker-compose/scripts` directory, which handle environment variable loading and proper command execution.
 
 ### Using Docker Compose Directly
 
@@ -243,5 +243,5 @@ You can automate your backups using a `cron` job or a `systemd` timer on your ho
 Example `cron` job to run a backup every day at 2 AM:
 
 ```cron
-0 2 * * * cd /home/nic/projects/personal/homelab-mono/dataops/docker && /usr/bin/docker compose run --rm backup backup /source -r sftp:${SFTP_USER}@${SFTP_HOST}:${SFTP_PATH} >> /var/log/restic-backup.log 2>&1
+0 2 * * * cd /home/nic/projects/personal/homelab-mono/dataops/systemd/restic-docker-compose && /usr/bin/docker compose run --rm backup backup /source -r sftp:${SFTP_USER}@${SFTP_HOST}:${SFTP_PATH} >> /var/log/restic-backup.log 2>&1
 ```
