@@ -1,0 +1,17 @@
+[Unit]
+Description=Olivet Sermon File Monitor Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /home/nic/projects/personal/homelab-mono/dataops/systemd/olivet-sermon-notifier/check-sermons.sh
+Restart=on-failure
+RestartSec=30
+User=root
+StandardOutput=journal
+
+# Set so that gotify cli gets the config in the directory
+WorkingDirectory=/home/nic/projects/personal/homelab-mono/dataops/systemd/olivet-sermon-notifier
+
+[Install]
+WantedBy=multi-user.target
