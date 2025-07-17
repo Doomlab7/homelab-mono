@@ -44,32 +44,46 @@ chmod +x check-sermons.sh
 
 ### 4. Install the systemd service
 
+#### Option A: System-wide installation (requires sudo/root)
+
 ```bash
-# Copy the service file to the systemd directory
-sudo cp sermon-monitor.service /etc/systemd/system/
-
-# Reload systemd to recognize the new service
-sudo systemctl daemon-reload
-
 # Enable and start the service
-sudo systemctl enable sermon-monitor.service
-sudo systemctl start sermon-monitor.service
+sudo systemctl enable ./sermon-monitor.service
+sudo systemctl start ./sermon-monitor.service
+```
+
+#### Option B: User-level installation (no sudo required)
+
+```bash
+# Enable and start the service for your user
+systemctl --user enable ./sermon-monitor.service
+systemctl --user start ./sermon-monitor.service
+
+# Enable lingering so the service runs even when you're not logged in
+# OPTIONAL
+loginctl enable-linger $USER
 ```
 
 ## Configuration
 
 The following settings can be modified in `check-sermons.sh`:
 
-- `WATCH_DIR`: Directory to monitor for new sermon files
-- `LOG_FILE`: Location of the log file
+- `DIR_PATH`: Target directory to monitor for new sermon files
+- `MODE`: Set to "ssh" for remote monitoring or "local" for local monitoring
+- `SSH_USER` and `SSH_HOST`: Remote server credentials (only used if MODE="ssh")
+- `LOG_DIR` and `LOG_FILE`: Log file locations
+- `MAX_LOG_SIZE_KB`: Maximum log file size before rotation (default: 1MB)
 
 ## Verification and Testing
 
 ### Check Service Status
 
 ```bash
-# Verify the service is active and running
+# For system-wide installation
 sudo systemctl status sermon-monitor.service
+
+# For user-level installation
+systemctl --user status sermon-monitor.service
 ```
 
 ### Restart the Service
@@ -77,29 +91,22 @@ sudo systemctl status sermon-monitor.service
 If you need to restart the service:
 
 ```bash
+# For system-wide installation
 sudo systemctl restart sermon-monitor.service
+
+# For user-level installation
+systemctl --user restart sermon-monitor.service
 ```
 
 ### Check Logs
 
 ```bash
-# View service logs
+# View service logs (system-wide)
 sudo journalctl -u sermon-monitor.service
 
+# View service logs (user-level)
+journalctl --user -u sermon-monitor.service
+
 # View the script's log file
-sudo cat /var/log/sermon-monitor.log
-```
-
-### Test with a New File
-
-Create a test file in the monitored directory to trigger a notification:
-
-```bash
-touch "/tank/encrypted/docker/nextcloud-zfs/nextcloud/data/__groupfolders/1/Sermons/Raw Upload/test-file.txt"
-```
-
-Then run the service manually to check if it works:
-
-```bash
-sudo systemctl start sermon-monitor.service
+cat ~/.local/state/sermon-monitor/sermon-monitor.log
 ```
