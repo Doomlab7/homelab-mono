@@ -214,3 +214,4 @@ terraform.rc
 # End of https://www.toptal.com/developers/gitignore/api/python,terraform,bash
 n
 dataops/docker/.restic-password
+dataops/systemd/restic-docker-compose/.restic-password
