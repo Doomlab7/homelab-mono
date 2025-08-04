@@ -1,0 +1,46 @@
+get-vault-key:
+    bws secret get $HOMELAB_BOT_VAULT_KEY_ID  | jq -r '.value'
+
+encrypt:
+    #!/bin/bash
+    set +e
+    just get-vault-key > key
+
+    ansible-vault encrypt pype.dev/terraform.tfstate --vault-password-file key
+    ansible-vault encrypt pype.dev/terraform.tfstate.backup --vault-password-file key
+    ansible-vault encrypt pype.dev/import.sh --vault-password-file key
+
+    ansible-vault encrypt paynepride.com/terraform.tfstate --vault-password-file key
+    ansible-vault encrypt paynepride.com/terraform.tfstate.backup --vault-password-file key
+    ansible-vault encrypt paynepride.com/import.sh --vault-password-file key
+
+    ansible-vault encrypt quadtask.app/terraform.tfstate --vault-password-file key
+    ansible-vault encrypt quadtask.app/terraform.tfstate.backup --vault-password-file key
+
+    ansible-vault encrypt mydigitalharbor.com/terraform.tfstate --vault-password-file key
+    ansible-vault encrypt mydigitalharbor.com/terraform.tfstate.backup --vault-password-file key
+    ansible-vault encrypt mydigitalharbor.com/import.sh --vault-password-file key
+
+    rm key
+
+decrypt:
+    #!/bin/bash
+    set +e
+    just get-vault-key > key
+
+    ansible-vault decrypt pype.dev/terraform.tfstate --vault-password-file key
+    ansible-vault decrypt pype.dev/terraform.tfstate.backup --vault-password-file key
+    ansible-vault decrypt pype.dev/import.sh --vault-password-file key
+
+    ansible-vault decrypt paynepride.com/terraform.tfstate --vault-password-file key
+    ansible-vault decrypt paynepride.com/terraform.tfstate.backup --vault-password-file key
+    ansible-vault decrypt paynepride.com/import.sh --vault-password-file key
+
+    ansible-vault decrypt quadtask.app/terraform.tfstate --vault-password-file key
+    ansible-vault decrypt quadtask.app/terraform.tfstate.backup --vault-password-file key
+
+    ansible-vault decrypt mydigitalharbor.com/terraform.tfstate --vault-password-file key
+    ansible-vault decrypt mydigitalharbor.com/terraform.tfstate.backup --vault-password-file key
+    ansible-vault decrypt mydigitalharbor.com/import.sh --vault-password-file key
+
+    rm key
