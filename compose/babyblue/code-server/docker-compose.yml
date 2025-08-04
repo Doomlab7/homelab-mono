@@ -1,0 +1,25 @@
+services:
+  code-server:
+    # image: lscr.io/linuxserver/code-server:latest
+    image: docker.io/pypeaday/code-server
+    container_name: code-server
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      # - PASSWORD=password #optional
+      # - HASHED_PASSWORD= #optional
+      # - SUDO_PASSWORD=password #optional
+      # - SUDO_PASSWORD_HASH= #optional
+      - DEFAULT_WORKSPACE=/code
+    volumes:
+      - ./config:/config
+      - /home/nic/projects/personal/:/code
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+    ports:
+      - 8443:8443
+    deploy:
+      resources:
+        limits:
+          memory: 4g
+    restart: unless-stopped

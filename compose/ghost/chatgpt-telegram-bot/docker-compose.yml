@@ -1,0 +1,13 @@
+services:
+  chatgpt-telegram-bot:
+    image: pypeaday/chatgpt-telegram-bot:latest
+    container_name: chatgpt-telegram-bot
+    env_file:
+      - .env
+    volumes:
+      - "/tank/encrypted/docker/chatgpt-telegram-bot/usage_logs:/app/usage_logs:rw"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: "200m"

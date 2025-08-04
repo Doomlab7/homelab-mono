@@ -1,0 +1,526 @@
+appConfig:
+  statusCheck: false
+  theme: default
+  fontAwesomeKey: f44bea53a7
+  customCss: '.clock p.time { font-size: 3rem !important; }'
+  layout: horizontal
+  iconSize: large
+  language: en
+  startingView: default
+  defaultOpeningMethod: newtab
+  statusCheckInterval: 0
+  faviconApi: allesedv
+  routingMode: history
+  enableMultiTasking: false
+  widgetsAlwaysUseProxy: false
+  webSearch:
+    disableWebSearch: false
+    searchEngine: duckduckgo
+    openingMethod: newtab
+    searchBangs: {}
+  enableFontAwesome: true
+  enableMaterialDesignIcons: true
+  hideComponents:
+    hideHeading: false
+    hideNav: false
+    hideSearch: false
+    hideSettings: true
+    hideFooter: false
+  auth:
+    enableGuestAccess: false
+    users: []
+    enableKeycloak: false
+  showSplashScreen: false
+  preventWriteToDisk: false
+  preventLocalSave: false
+  disableConfiguration: false
+  allowConfigEdit: true
+  enableServiceWorker: false
+  disableContextMenu: false
+  disableUpdateChecks: false
+  disableSmartSort: false
+  enableErrorReporting: false
+pageInfo:
+  title: Hello, Nic!
+  description: Paynepride Homepage
+  navLinks: []
+  footerText: ''
+  logo: https://i.ibb.co/71WyyzM/little-bot-3.png
+sections:
+  - name: Home
+    icon: fa-solid fa-home
+    displayData:
+      sortBy: default
+      rows: 1
+      cols: 1
+      collapsed: false
+      hideForGuests: false
+    items:
+      - title: Nextcloud
+        icon: https://duckduckgo.com/i/4597dac5.png
+        url: https://nextcloud.paynepride.com
+        statusCheck: true
+        id: 0_393_nextcloud
+      - title: Home Assistant
+        description: Smart home control
+        icon: hl-home-assistant
+        url: http://homeassistant:8123/lovelace/0
+        statusCheck: false
+        id: 1_393_homeassistant
+      - title: Kanboard
+        description: Home Kanban Board
+        icon: fa-solid fa-tasks
+        url: https://kanboard.paynepride.com/
+        statusCheck: true
+        id: 2_393_kanboard
+      - title: Linkding
+        description: Bookmarks
+        icon: https://linkding.paynepride.com/static/logo.png
+        url: https://linkding.paynepride.com/bookmarks
+        statusCheck: true
+        id: 3_393_linkding
+      - title: MonicaDB
+        description: Relationship Management
+        icon: 🐼
+        url: http://192.168.1.9:8089/dashboard
+        id: 4_393_monicadb
+      - title: Bitwarden
+        icon: https://duckduckgo.com/i/ea6441be.png
+        url: https://www.bitwarden.com
+        statusCheck: true
+        id: 5_393_bitwarden
+      - title: ProtonMail
+        description: E-mail
+        icon: https://www.vectorlogo.zone/logos/protonmail/protonmail-icon.svg
+        url: https://mail.protonmail.com/
+        id: 6_393_protonmail
+      - title: Jellyfin
+        icon: https://external-content.duckduckgo.com/ip3/jellyfin.org.ico
+        url: https://jellyfin.paynepride.com
+        statusCheck: true
+        id: 7_393_jellyfin
+      - title: Immich
+        description: Photo Gallary
+        url: https://immich.paynepride.com
+        id: 8_393_immich
+      - title: Logos
+        description: Bible Application
+        icon: favicon
+        url: https://app.logos.com
+        id: 9_393_logos
+  - name: Today
+    icon: far fa-smile-beam
+    displayData:
+      collapsed: false
+      hideForGuests: false
+    widgets:
+      - type: clock
+        id: 0_513_clock
+      - type: weather
+        options:
+          apiKey: efdbade728b37086877a5e83442004db
+          city: London
+        id: 1_513_weather
+      - type: public-ip
+        id: 2_513_publicip
+    items: []
+  - name: Servarr
+    icon: >-
+      https://github.com/Servarr/Wiki/raw/master/assets/servarr/servarr_dark_1024.png
+    displayData:
+      sortBy: default
+    items:
+      - title: Sonarr
+        description: TV
+        icon: https://wiki.servarr.com/assets/sonarr/logos/128.png
+        url: https://sonarr.paynepride.com
+        statusCheck: true
+        id: 0_741_sonarr
+      - title: Radarr
+        description: Movies
+        icon: https://wiki.servarr.com/assets/radarr/logos/128.png
+        url: https://radarr.paynepride.com
+        statusCheck: true
+        id: 1_741_radarr
+      - title: Prowlarr
+        description: Index
+        icon: https://wiki.servarr.com/assets/prowlarr/logos/128.png
+        url: https://prowlarr.paynepride.com
+        statusCheck: true
+        id: 2_741_prowlarr
+      - title: Lidarr
+        description: Music
+        icon: https://wiki.servarr.com/assets/lidarr/logos/128.png
+        url: https://lidarr.paynepride.com
+        statusCheck: true
+        id: 3_741_lidarr
+      - title: Transmission
+        description: Torrent Downloader
+        icon: https://external-content.duckduckgo.com/ip3/transmissionbt.com.ico
+        url: https://transmission_openvpn.paynepride.com/transmission/web/
+        statusCheck: true
+        id: 4_741_transmission
+      - title: Readarr
+        description: Books
+        icon: https://wiki.servarr.com/assets/readarr/logos/128.png
+        url: https://readarr.paynepride.com/
+        statusCheck: true
+        id: 5_741_readarr
+      - title: Tdarr
+        description: Transcoding
+        icon: https://tdarr.paynepride.com/favicon.ico
+        url: https://tdarr.paynepride.com
+        statusCheck: true
+        id: 6_741_tdarr
+      - title: Jellyseerr
+        description: Catalog
+        icon: https://docs.jellyseerr.dev/img/logo.svg
+        url: https://jellyseerr.paynepride.com/
+        id: 7_741_jellyseerr
+  - name: Dev & Cloud
+    icon: fa-solid fa-code
+    items:
+      - title: GitHub
+        icon: favicon
+        url: https://github.com/pypeaday
+        id: 0_892_github
+      - title: Namecheap
+        icon: >-
+          https://static-00.iconduck.com/assets.00/namecheap-icon-512x512-jcdkwntk.png
+        url: https://ap.www.namecheap.com/
+        statusCheckAcceptCodes: '403'
+        id: 1_892_namecheap
+      - title: Pype.dev
+        description: Blog
+        icon: >-
+          https://raw.githubusercontent.com/pypeaday/pype.dev/main/static/iconified/favicon.ico
+        url: https://pype.dev
+        id: 2_892_pypedev
+      - title: Small Group Notes
+        icon: >-
+          https://cdn3.iconfinder.com/data/icons/literature-1/512/hole-book-bible-scripture-512.png
+        url: https://pypeaday.github.io/small-group-notes/
+        id: 3_892_smallgroupnotes
+      - title: SadServers
+        description: Fix some sad servers :'(
+        icon: fa-solid fa-face-sad-tear
+        url: https://sadservers.com/scenarios
+        id: 4_892_sadservers
+      - title: PDF Utilities
+        icon: >-
+          https://raw.githubusercontent.com/Stirling-Tools/Stirling-PDF/main/docs/stirling.png
+        url: https://stirlingtools.paynepride.com/
+        id: 5_892_pdfutilities
+      - title: Manyfold
+        description: 3d Library
+        icon: https://avatars.githubusercontent.com/u/152926958?s=48&v=4
+        url: https://manyfold.paynepride.com
+        id: 6_892_manyfold
+    displayData:
+      sortBy: default
+      rows: 1
+      cols: 1
+      collapsed: false
+      hideForGuests: false
+  - name: Admin
+    icon: fa-solid fa-crosshairs
+    displayData:
+      sortBy: default
+      rows: 1
+      cols: 1
+      collapsed: false
+      hideForGuests: false
+    items:
+      - title: Cockpit
+        description: Server Web Interface
+        icon: 🔭
+        url: https://ghost:7777
+        id: 0_489_cockpit
+      - title: hcio
+        description: Healthchecks
+        icon: https://healthchecks.io/favicon.ico
+        url: >-
+          https://healthchecks.io/projects/214050b7-9299-4f6b-8b04-3e551dde6c6f/checks/
+        statusCheck: true
+        id: 1_489_hcio
+      - title: Traefik
+        description: Reverse Proxy
+        icon: >-
+          https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmiro.medium.com%2Fmax%2F600%2F1*Hl3OGno7atEBb5-wLUhefw.png&f=1&nofb=1
+        url: ' http://ghost:8083/dashboard/'
+        statusCheck: true
+        id: 2_489_traefik
+      - title: Cloud Commander
+        icon: >-
+          https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi2.wp.com%2Fcolaboratorio.net%2Fwp-content%2Fuploads%2F2018%2F12%2FCloudCommander-logo-filtroOK.png%3Ffit%3D1200%252C800%26ssl%3D1&f=1&nofb=1
+        url: http://ghost:7373
+        statusCheck: true
+        statusCheckAllowInsecure: true
+        id: 3_489_cloudcommander
+      - title: Guacamole
+        description: KVM
+        icon: >-
+          https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic.wixstatic.com%2Fmedia%2F7e639a_14287d75f60443fc9cf7704ad9bf87d1~mv2.png%2Fv1%2Ffit%2Fw_1000%252Ch_1000%252Cal_c%2Ffile.png&f=1&nofb=1
+        url: https://guacamole.paynepride.com/
+        statusCheck: true
+        id: 4_489_guacamole
+      - title: Portainer
+        description: Docker Management
+        icon: >-
+          https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fautoize.com%2Fwp-content%2Fuploads%2F2017%2F02%2FPortainer-logo.png&f=1&nofb=1https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fautoize.com%2Fwp-content%2Fuploads%2F2017%2F02%2FPortainer-logo.png&f=1&nofb=1
+        url: https://portainer.paynepride.com
+        statusCheck: true
+        id: 5_489_portainer
+      - title: OPNSense
+        description: Router
+        icon: >-
+          https://192.168.1.1:8443/ui/themes/opnsense/build/images/default-logo.svg?v=62992a662883c6c9
+        url: https://192.168.1.1:8443/
+        id: 6_489_opnsense
+      - title: Status Page
+        description: Uptime Kuma
+        url: https://uptime_kuma.paynepride.com
+        icon: >-
+          https://raw.githubusercontent.com/louislam/uptime-kuma/5b6522a54edad9737fccf195f9eaa25c6fb9d0f6/public/icon.svg
+        statusCheck: true
+        id: 7_489_statuspage
+      - title: Simplelogin
+        description: Privacy e-mail relay
+        icon: https://avatars.githubusercontent.com/u/51910064?s=280&v=4
+        url: https://app.simplelogin.io/dashboard/
+        id: 8_489_simplelogin
+      - title: CloudFlare
+        icon: favicon
+        url: https://dash.cloudflare.com/
+        statusCheckAcceptCodes: '403'
+        id: 9_489_cloudflare
+      - title: Pi Hole
+        description: Ad Blocker
+        icon: https://wp-cdn.pi-hole.net/wp-content/uploads/2016/12/Vortex-R.png
+        url: https://pihole.paynepride.com
+        id: 10_489_pihole
+      - title: Syncthing
+        description: Sync the things
+        icon: https://syncthing.net/img/logo-horizontal.svg
+        url: http://ghost:8384
+        id: 11_489_syncthing
+      - title: JetKVM
+        description: Ghost KVM
+        icon: https://avatars.githubusercontent.com/u/183740260?s=280&v=4
+        url: http://192.168.1.135/login-local
+        id: 12_489_jetkvm
+  - name: Media
+    displayData:
+      sortBy: default
+      rows: 1
+      cols: 1
+      collapsed: false
+      hideForGuests: false
+    items:
+      - title: Pinchflat
+        description: Youtube Archive
+        icon: >-
+          https://github.com/kieraneglin/pinchflat/raw/master/priv/static/images/originals/logo-white-wordmark-with-background.png
+        url: https://pinchflat.paynepride.com
+        statusCheck: true
+        id: 0_480_pinchflat
+      - title: Paperless
+        description: Document
+        icon: >-
+          https://raw.githubusercontent.com/bauerj/paperless_app/570ec4859be33e3ce80f8890884e87bc58a5ffaf/assets/logo.svg
+        url: http://paynepride.com:16922/
+        statusCheck: true
+        id: 1_480_paperless
+      - title: Ubooquity
+        description: Books
+        icon: 📚
+        url: http://paynepride.com:2202/ubooquity
+        statusCheck: true
+        id: 2_480_ubooquity
+      - title: Spotify
+        icon: fa-brands fa-spotify
+        url: https://open.spotify.com/
+        id: 3_480_spotify
+      - title: Audio BookShelf
+        description: Audiobooks and Podcasts
+        icon: >-
+          https://play-lh.googleusercontent.com/9Qjh1GhRcPcUOQLTt-DdnYV2PS9ENidfvkGZ602QWF36KGvLogzcJwCaKTcWBytVGktP=w240-h480
+        url: https://audiobookshelf.paynepride.com
+        statusCheck: true
+        statusCheckUrl: https://booksonic.paynepride.com
+        id: 4_480_audiobookshelf
+      - title: Jellystat
+        description: Stats for nerds!
+        icon: https://jellystat.paynepride.com/assets/icon-b-512-2e5110d2.png
+        url: https://jellystat.paynepride.com
+        id: 5_480_jellystat
+      - title: Jellyfin
+        description: Media Server
+        icon: https://external-content.duckduckgo.com/ip3/jellyfin.org.ico
+        url: https://jellyfin.paynepride.com
+        statusCheck: true
+        id: 6_480_jellyfin
+  - name: Monitoring
+    displayData:
+      sortBy: default
+      rows: 1
+      cols: 1
+      collapsed: false
+      hideForGuests: false
+    items:
+      - title: Ghost - Glances
+        description: Top-like view
+        icon: https://nicolargo.github.io/glances/public/images/glances.png
+        url: https://glances.paynepride.com
+        statusCheck: true
+        id: 0_1062_ghostglances
+      - title: Ghost - Netdata
+        description: Netdata
+        icon: https://external-content.duckduckgo.com/ip3/www.netdata.cloud.ico
+        url: >-
+          https://netdata.paynepride.com/#after=-720;before=0;=undefined;theme=slate;utc=America%2FChicago
+        statusCheck: true
+        id: 1_1062_ghostnetdata
+      - title: Gotify
+        description: Notifications
+        icon: https://external-content.duckduckgo.com/ip3/gotify.net.ico
+        url: http://paynepride.com:2346/#/login
+        statusCheck: true
+        id: 2_1062_gotify
+      - title: Minio
+        description: Blob storage
+        icon: https://min.io/resources/img/logo/MINIO_Bird.png
+        url: https://minio.paynepride.com
+        statusCheck: true
+        id: 3_1062_minio
+      - title: Promtail
+        url: http://ghost:9080/targets
+        statusCheck: true
+        id: 4_1062_promtail
+      - title: Babyblue - Netdata
+        description: Netdata
+        icon: https://external-content.duckduckgo.com/ip3/www.netdata.cloud.ico
+        url: http://babyblue:19999
+        statusCheck: true
+        id: 5_1062_babybluenetdata
+      - title: Babyblue - Glances
+        description: Top-like view
+        icon: https://nicolargo.github.io/glances/public/images/glances.png
+        url: http://babyblue:61208/
+        statusCheck: true
+        id: 6_1062_babyblueglances
+      - title: Ghost Vault Dashboard
+        description: System Wide Monitoring
+        url: http://ghost-vault:3005
+        id: 7_1062_ghostvaultdashboard
+    icon: fa-solid fa-monitor-heart-rate
+  - name: Olivet
+    displayData:
+      sortBy: default
+      rows: 1
+      cols: 1
+      collapsed: false
+      hideForGuests: false
+    items:
+      - title: Weebly
+        description: Website Admin
+        icon: favicon
+        url: https://www.weebly.com/app/front-door/signin?path=login#/
+        id: 0_627_weebly
+      - title: Sermon Upload
+        description: Raw upload from Sunday
+        icon: https://duckduckgo.com/i/4597dac5.png
+        url: >-
+          https://nextcloud.paynepride.com/apps/files/files/993794?dir=/Olivet%20Bible/Sermons/Raw%20Upload
+        id: 1_627_sermonupload
+      - title: CCLI
+        description: Records of CCLI numbers for our songs
+        icon: fa-solid fa-hashtag
+        url: >-
+          https://docs.google.com/spreadsheets/d/1-nPRo68IiSbJn9hF_EVovrBUePMS0XbzVxF6iL-8s7g/edit?gid=1472261657#gid=1472261657
+        id: 2_627_ccli
+      - title: Setlists
+        description: ''
+        icon: fas fa-music
+        url: >-
+          https://docs.google.com/spreadsheets/d/1x-0TRXQqs3_n1VgP2c_pK4gUmIZF2w_ZU28u23-iGyY/edit?gid=118166864#gid=118166864
+        id: 3_627_setlists
+      - title: Service SIgn Ups
+        description: >-
+          Sign ups for various things at the church - clelan up, remodels,
+          meals, etc.
+        icon: fas fa-broom
+        url: >-
+          https://docs.google.com/spreadsheets/d/1rFuXeDzWZND8ihxUmvo-OgItqltEzbhO0ue3QpG_L-Y/edit#gid=1391041330
+        id: 4_627_servicesignups
+      - title: Lyrics
+        description: Approved Song Lyrics
+        icon: fas fa-microphone
+        url: >-
+          https://docs.google.com/document/d/1xM6EsmcZrWKycEC4K7fuHpywpncj4qQXvlHlZoa0LeU/edit#heading=h.qxiffor0i5b1
+        id: 5_627_lyrics
+    icon: fa-solid fa-church
+  - name: Portals
+    displayData:
+      sortBy: default
+      rows: 1
+      cols: 1
+      collapsed: false
+      hideForGuests: false
+    items:
+      - title: Appleton Utilities Bill Pay
+        icon: >-
+          https://www.appleton.org/Project/Contents/Main/_gfx/cmn/logo-footer.png
+        url: https://client.pointandpay.net/web/CityofAppletonWIUtilityBilling
+        id: 0_741_appletonutilitiesbillpay
+      - title: Aquahawk
+        description: Water/Services Monitoring
+        icon: https://applwi.aquahawk.us/resources/aquahawk/AquaHawk_power.png
+        url: https://applwi.aquahawk.us/
+        id: 1_741_aquahawk
+    icon: fa-solid fa-person-to-portal
+  - name: IF I DIE
+    icon: fa-solid fa-skull
+    displayData:
+      sortBy: default
+      rows: 1
+      cols: 1
+      collapsed: false
+      hideForGuests: false
+    items:
+      - title: Github - EOL Repo
+        description: Repo with instructions for what to do after my death
+        icon: fa-solid fa-book-skull
+        url: https://github.com/pypeaday/eol-dr
+        id: 0_490_githubeolrepo
+  - name: Finances
+    icon: fas-money
+    displayData:
+      sortBy: default
+      rows: 1
+      cols: 1
+      collapsed: false
+      hideForGuests: false
+    items:
+      - title: Actual Budget
+        description: Budget Application
+        icon: >-
+          https://github.com/actualbudget/docs/blob/master/static/img/favicon.png?raw=true
+        url: https://actual.paynepride.com
+        id: 0_807_actualbudget
+      - title: Edvest 529 Plans
+        description: 529 plans for the girls
+        url: https://www.edvest-529.com/widtpl/auth/ll.cs
+        id: 1_807_edvestplans
+      - title: RightCapital
+        description: Abri finance portal
+        url: https://app.rightcapital.com/account/login
+        id: 2_807_rightcapital
+      - title: Wealth
+        description: Estate planning
+        url: https://app.wealth.com/login
+        id: 3_807_wealth
+      - title: Altruist
+        description: 'Accounts: UTMA, Roth, etc'
+        url: https://app.altruist.com/login
+        id: 4_807_altruist

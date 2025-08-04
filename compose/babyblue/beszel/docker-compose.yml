@@ -1,0 +1,22 @@
+services:
+  # Running on ghost
+  # beszel:
+  #   image: henrygd/beszel
+  #   container_name: beszel
+  #   restart: unless-stopped
+  #   ports:
+  #     - 8090:8090
+  #   volumes:
+  #     - /tank/encrypted/docker/beszel:/beszel_data
+  beszel-agent:
+    image: "henrygd/beszel-agent"
+    container_name: "beszel-agent"
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # monitor other disks / partitions by mounting a folder in /extra-filesystems
+      - /var/mnt/tank/.beszel:/extra-filesystems/tank:ro
+    environment:
+      PORT: 45876
+    env_file: .env

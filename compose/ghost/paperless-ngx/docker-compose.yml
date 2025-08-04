@@ -1,0 +1,87 @@
+services:
+  paperless-ngx:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    # image: ghcr.io/paperless-ngx/paperless-ngx@sha256:e7cfb6376031b17b43d31b216dcc89bcb9c9cdd4aae444d13c0de3019a1beb6e
+    container_name: paperless-ngx
+    ports:
+      - "16922:8000"
+    volumes:
+      - "/tank/encrypted/docker/paperless-ngx/data:/usr/src/paperless/data"
+      - "/tank/encrypted/nas/documents/paperless/media:/usr/src/paperless/media"
+      - "/tank/encrypted/nas/documents/paperless/export:/usr/src/paperless/export"
+      - "/tank/encrypted/nas/documents/paperless/consume:/usr/src/paperless/consume"
+    depends_on:
+      - paperless-ngx-redis
+      - paperless-ngx-postgres
+    env_file: .env
+    networks:
+      - paperless-ngx
+    restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.paperless_ngx.rule: "Host(`paperless.paynepride.com`)"
+      traefik.http.routers.paperless_ngx.tls.certresolver: letsencrypt
+      traefik.http.routers.paperless_ngx.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.paperless_ngx.tls.domains[0].sans: "*.paynepride.com"
+      # traefik.http.routers.paperless_ngx.middlewares: default-whitelist@file
+      traefik.http.services.paperless_ngx.loadbalancer.server.port: 8000
+
+  paperless-ngx-postgres:
+    image: postgres:13
+    container_name: paperless-ngx-postgres
+    networks:
+      - paperless-ngx
+    volumes:
+      - "/tank/encrypted/docker/paperless-ngx/postgres:/var/lib/postgresql/data"
+    restart: unless-stopped
+    env_file: .db.env
+
+  paperless-ngx-redis:
+    image: redis:6.0
+    container_name: paperless-ngx-redis
+    networks:
+      - paperless-ngx
+    healthcheck:
+      test: redis-cli ping
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  #### AI
+  paperless-gpt:
+    image: icereed/paperless-gpt:latest
+    container_name: paperless-gpt
+    restart: unless-stopped
+    environment:
+      PAPERLESS_BASE_URL: 'http://paperless-ngx:8000'
+      PAPERLESS_API_TOKEN: '5b0b08808e279186f67934c9f2dd154e5a25a027'
+      PAPERLESS_PUBLIC_URL: 'https://paperless.paynepride.com' # Optional
+      MANUAL_TAG: 'paperless-gpt'          # Optional, default: paperless-gpt
+      AUTO_TAG: 'paperless-gpt-auto'       # Optional, default: paperless-gpt-auto
+      LLM_PROVIDER: 'ollama'               # or 'ollama' or 'openai'
+      LLM_MODEL: 'llama3.2'                  # or 'llama2'
+      OPENAI_API_KEY: 'your_openai_api_key'
+      # Optional - OPENAI_BASE_URL: 'https://litellm.yourinstallationof.it.com/v1'
+      LLM_LANGUAGE: 'English'              # Optional, default: English
+      OLLAMA_HOST: 'http://babyblue-aurora:11434' # If using Ollama
+      VISION_LLM_PROVIDER: 'ollama'        # (for OCR) - openai or ollama
+      VISION_LLM_MODEL: 'minicpm-v'        # (for OCR) - minicpm-v (ollama example), gpt-4o (for openai), etc.
+      AUTO_OCR_TAG: 'paperless-gpt-ocr-auto' # Optional, default: paperless-gpt-ocr-auto
+      LOG_LEVEL: 'info'                    # Optional: debug, warn, error
+    networks:
+      - paperless-ngx
+    volumes:
+      - ./prompts:/app/prompts   # Mount the prompts directory
+    ports:
+      - '8089:8080'
+    depends_on:
+      - paperless-ngx
+
+networks:
+  paperless-ngx:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.32.0.0/16

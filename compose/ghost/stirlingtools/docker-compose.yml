@@ -1,0 +1,35 @@
+services:
+  stirlingtools:
+    container_name: "stirlingtools"
+    image: ghcr.io/stirling-tools/s-pdf:latest
+    ports:
+      - "8010:8080"
+    volumes:
+      - "/tank/encrypted/docker/stirlingtools/trainingData:/usr/share/tessdata" # Required for extra OCR languages
+      - "/tank/encrypted/docker/stirlingtools/extraConfigs:/configs"
+    environment:
+      TZ: "America/Chicago"
+      PUID: "1000"
+      PGID: "1000"
+      DOCKER_ENABLE_SECURITY: "false"
+      INSTALL_BOOK_AND_ADVANCED_HTML_OPS: "false"
+      LANGS: en_US
+    restart: unless-stopped
+    networks:
+      - phantomlink
+    deploy:
+      resources:
+        limits:
+          memory: "2g"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.stirlingtools.rule: Host(`stirlingtools.paynepride.com`)
+      traefik.http.routers.stirlingtools.tls.certresolver: letsencrypt
+      traefik.http.routers.stirlingtools.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.stirlingtools.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.routers.stirlingtools.middlewares: default-whitelist@file
+      traefik.http.services.stirlingtools.loadbalancer.server.port: 8080
+
+networks:
+  phantomlink:
+    external: true

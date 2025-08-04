@@ -1,0 +1,28 @@
+services:
+  shotput:
+    image: registry.paynepride.com/images.pype.dev:latest
+    # build: .
+    ports:
+      - "7999:8000"
+    volumes:
+      # cloned to projects directory - no need to use zfs since it's a git repo
+      - /home/nic/projects/personal/images.pype.dev:/app
+      # This key file on your HOST must have permissions 600
+      # NOTE: If using SSH
+      # TODO: sshkey-gen and add to GitHub
+      - /tank/encrypted/docker/the-pit-zfs/images.pype.dev/id_rsa:/home/appuser/.ssh/id_rsa:ro
+    env_file: .env
+    restart: unless-stopped
+    networks:
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.shotput.rule: "Host(`shotput.paynepride.com`)"
+      traefik.http.routers.shotput.tls.certresolver: letsencrypt
+      traefik.http.routers.shotput.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.shotput.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.routers.shotput.middlewares: "default-whitelist@file"
+      traefik.http.services.shotput.loadbalancer.server.port: "8000"
+networks:
+  phantomlink:
+    external: true

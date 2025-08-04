@@ -1,0 +1,9 @@
+traefik:
+  #!/bin/bash
+  set -e
+  ssh ghost "mkdir -p /tank/encrypted/docker/traefik/letsencrypt"
+  scp -r ./private/config.yml ghost:/tank/encrypted/docker/traefik/config.yml
+  scp -r ./private/traefik.toml ghost:/tank/encrypted/docker/traefik/traefik.toml
+  scp -r ./private/usersFile ghost:/tank/encrypted/docker/traefik/usersFile
+  docker context use ghost
+  docker compose up -d --force-recreate

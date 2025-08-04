@@ -1,0 +1,38 @@
+# services:
+#   web:
+#     image: registry.paynepride.com/dad-can-i-wear:latest
+#     ports:
+#       - "8078:8000"
+#     environment:
+#       - OLLAMA_HOST=http://babyblue-aurora:11434
+#       - OLLAMA_MODEL=dolphin3:latest
+#       # - OLLAMA_MODEL=dad-can-i-wear-this
+#
+#     # depends_on:
+#     #   - ollama
+#     restart: unless-stopped
+#     labels:
+#       traefik.enable: "true"
+#       traefik.http.routers.dad_can_i_wear.rule: Host(`dad-can-i-wear.paynepride.com`)
+#       traefik.http.routers.dad_can_i_wear.tls.certresolver: letsencrypt
+#       traefik.http.routers.dad_can_i_wear.tls.domains[0].main: "paynepride.com"
+#       traefik.http.routers.dad_can_i_wear.tls.domains[0].sans: "*.paynepride.com"
+#       traefik.http.services.dad_can_i_wear.loadbalancer.server.port: "8000"
+#       # traefik.http.routers.dad_can_i_wear.middlewares: "default-whitelist@file"
+#
+# #   ollama:
+# #     image: ollama/ollama:latest
+# #     volumes:
+# #       - ollama_data:/root/.ollama
+# #     ports:
+# #       - "11434:11434"
+# #     deploy:
+# #       resources:
+# #         reservations:
+# #           devices:
+# #             - driver: nvidia
+# #               count: all
+# #               capabilities: [gpu]
+#
+# # volumes:
+# #   ollama_data:

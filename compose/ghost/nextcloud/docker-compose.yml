@@ -1,0 +1,68 @@
+services:
+  nextcloud-mysql:
+    image: mariadb:10.11
+    container_name: nextcloud-mysql
+    volumes:
+      - "/tank/encrypted/docker/nextcloud-zfs/mysql:/var/lib/mysql:rw"
+    env_file: .env
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+
+  nextcloud-redis:
+    image: redis
+    container_name: nextcloud-redis
+    env_file: .env
+    command: "redis-server --requirepass $REDIS_HOST_PASSWORD"
+    restart: unless-stopped
+    labels:
+      com.centurylinklabs.watchtower.monitor-only: "true"
+
+  nextcloud:
+    image: nextcloud:30.0.3
+    container_name: nextcloud
+    depends_on:
+      - nextcloud-mysql
+      - nextcloud-redis
+    links:
+      - nextcloud-mysql:mysql
+      - nextcloud-redis:redis
+    volumes:
+      - "/tank/encrypted/docker/nextcloud-zfs/nextcloud:/var/www/html:rw"
+      - "/tank/encrypted/nas:/nas:rw"
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    env_file: .env
+    deploy:
+      resources:
+        limits:
+          memory: "8g"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.nextcloud.rule: Host(`nextcloud.paynepride.com`)
+      traefik.http.routers.nextcloud.tls.certresolver: letsencrypt
+      traefik.http.routers.nextcloud.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.nextcloud.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.nextcloud.loadbalancer.server.port: "80"
+      traefik.http.routers.nextcloud.middlewares: redirect-dav@file,default-headers@file
+
+  nextcloud-cron:
+    image: nextcloud:30.0.3
+    container_name: nextcloud-cron
+    depends_on:
+      - nextcloud-mysql
+    links:
+      - nextcloud-mysql:mysql
+    entrypoint: /cron.sh
+    volumes:
+      - "/tank/encrypted/docker/nextcloud-zfs/nextcloud:/var/www/html:rw"
+      - "/tank/encrypted/nas:/nas:rw"
+    env_file: .env
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1g

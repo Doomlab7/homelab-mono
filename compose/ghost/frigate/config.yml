@@ -1,0 +1,30 @@
+mqtt:
+  enabled: false
+go2rtc:
+  streams:
+    front_door:
+      - rtsp://user:password@<ip>:554  # main
+      - ffmpeg:front_door#audio=aac
+cameras:
+  front_door:  # <------ Name the camera
+    ffmpeg:
+      output_args:
+        record: preset-record-generic-audio-copy
+      inputs:
+        - path: rtsp://127.0.0.1:8554/front_door?video=copy&audio=aac  # <----- The stream you want to use for detection
+          hwaccel_args: preset-vaapi
+          roles:
+            - detect
+            - record
+    detect:
+      enabled: true  # <---- disable detection until you have a working camera feed
+      width: 1280  # <---- update for your camera's resolution
+      height: 720  # <---- update for your camera's resolution%
+    record:
+      enabled: true  # <---- disable record until you have a working camera feed
+    snapshots:
+      enabled: true
+detectors:
+  coral:
+    type: edgetpu
+    device: pci

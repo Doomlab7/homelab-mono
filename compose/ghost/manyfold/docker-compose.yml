@@ -1,0 +1,50 @@
+services:
+  manyfold-postgres:
+    image: postgres:15
+    container_name: manyfold-postgres
+    environment:
+      POSTGRES_USER: manyfold
+    env_file: .env
+    volumes:
+      - "/tank/encrypted/docker/manyfold-zfs/db:/var/lib/postgresql/data:rw"
+    restart: unless-stopped
+
+  manyfold-redis:
+    image: redis:7
+    container_name: manyfold-redis
+    restart: unless-stopped
+
+  manyfold:
+    image: "ghcr.io/manyfold3d/manyfold:latest"
+    container_name: manyfold
+    environment:
+      TZ: "America/Chicago"
+      PUID: "1000"
+      PGID: "1000"
+      REDIS_URL: redis://manyfold-redis:6379/1
+      DATABASE_ADAPTER: postgresql
+      DATABASE_HOST: manyfold-postgres
+      DATABASE_NAME: manyfold
+      DATABASE_USER: manyfold
+      DATABASE_PASSWORD: "$POSTGRES_PASSWORD"
+    env_file: .env
+    ports:
+      - "3214:3214"
+    volumes:
+      - "/tank/encrypted/docker/manyfold-zfs/libraries:/libraries:rw"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: "2g"
+    depends_on:
+      - manyfold-postgres
+      - manyfold-redis
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.manyfold.rule: "Host(`manyfold.paynepride.com`)"
+      traefik.http.routers.manyfold.tls.certresolver: letsencrypt
+      traefik.http.routers.manyfold.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.manyfold.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.routers.manyfold.middlewares: default-whitelist@file
+      traefik.http.services.manyfold.loadbalancer.server.port: "3214"

@@ -1,0 +1,17 @@
+services:
+  traefik:
+    image: traefik:v2.4
+    container_name: traefik
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - "/tank/encrypted/docker/traefik/traefik.toml:/etc/traefik/traefik.toml:ro"
+      - "/tank/encrypted/docker/traefik/config.yml:/etc/traefik/config.yml:ro"
+      - "/tank/encrypted/docker/traefik/usersFile:/etc/traefik/usersFile:ro"
+      - "/tank/encrypted/docker/traefik/letsencrypt:/letsencrypt:rw"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    env_file: .env
+    deploy:
+      resources:
+        limits:
+          memory: "1g"

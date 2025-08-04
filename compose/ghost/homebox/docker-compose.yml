@@ -1,0 +1,28 @@
+services:
+  homebox:
+    image: ghcr.io/sysadminsmedia/homebox:latest
+    container_name: homebox
+    restart: always
+    environment:
+      - HBOX_LOG_LEVEL=info
+      - HBOX_LOG_FORMAT=text
+      - HBOX_WEB_MAX_FILE_UPLOAD=10
+      # Please consider allowing analytics to help us improve Homebox (basic computer information, no personal data)
+      - HBOX_OPTIONS_ALLOW_ANALYTICS=false
+    volumes:
+      - /tank/encrypted/docker/the-pit-zfs/homebox-data:/data/
+    ports:
+      - 3100:7745
+    networks:
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.homebox.rule: "Host(`homebox.paynepride.com`)"
+      traefik.http.routers.homebox.tls.certresolver: letsencrypt
+      traefik.http.routers.homebox.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.homebox.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.routers.homebox.middlewares: "default-whitelist@file"
+      traefik.http.services.homebox.loadbalancer.server.port: "7745"
+networks:
+  phantomlink:
+    external: true

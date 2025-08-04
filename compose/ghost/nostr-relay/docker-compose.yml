@@ -1,0 +1,25 @@
+services:
+  nostr-relay:
+    image: nostr-rs-relay:latest
+    container_name: nostr-relay
+    ports:
+      - "7000:8080"
+    environment:
+      TZ: America/Chicago
+    volumes:
+      - /tank/encrypted/docker/nostr-relay/data:/usr/src/app/db
+      - /tank/encrypted/docker/nostr-relay/config.toml:/usr/src/app/config.toml
+    restart: unless-stopped
+    networks:
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.nostr.rule: Host(`nostr.paynepride.com`)
+      traefik.http.routers.nostr.tls.certresolver: letsencrypt
+      traefik.http.routers.nostr.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.nostr.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.routers.nostr.middlewares: default-whitelist@file
+      traefik.http.services.nostr.loadbalancer.server.port: 8080
+networks:
+  phantomlink:
+    external: true

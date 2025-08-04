@@ -1,0 +1,13 @@
+services:
+  apprise:
+    image: registry.paynepride.com/apprise:latest
+    container_name: apprise
+    environment:
+      - APPRISE_STATEFUL_MODE=simple
+    ports:
+      - 8066:8000
+    volumes:
+      - /tank/encrypted/docker/the-pit-zfs/apprise/apprise_api:/opt/apprise/webapp
+      - /tank/encrypted/docker/the-pit-zfs/apprise/config:/config
+      - /tank/encrypted/docker/the-pit-zfs/apprise/plugin:/plugin
+      - /tank/encrypted/docker/the-pit-zfs/apprise/attach:/attach

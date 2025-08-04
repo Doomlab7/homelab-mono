@@ -1,0 +1,65 @@
+{
+  "mcpServers": {
+    "docker-mcp": {
+      "command": "uvx",
+      "args": [
+        "docker-mcp"
+      ]
+    },
+    "ragdocs": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "/home/nic/docker-volume-data/mcphub/node_modules/@qpd-v/mcp-server-ragdocs/build/index.js"
+      ],
+      "env": {
+        "QDRANT_URL": "http://qdrant:6333",
+        "EMBEDDING_PROVIDER": "ollama",
+        "OLLAMA_URL": "http://ollama:11434"
+      },
+      "enabled": false
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    "sqlite": {
+      "type": "sse",
+      "url": "http://babyblue-aurora:3000/sse",
+      "keepAliveInterval": 60000
+    },
+    "basic-memory": {
+      "command": "uvx",
+      "args": [
+        "basic-memory",
+        "mcp"
+      ],
+      "env": {}
+    },
+    "searxng": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "https://github.com/ihor-sokoliuk/mcp-searxng"
+      ],
+      "env": {
+        "SEARXNG_URL": "https://searxng.paynepride.com"
+      }
+    },
+    "git": {
+      "type": "sse",
+      "url": "http://babyblue-aurora:3000/sse",
+      "keepAliveInterval": 60000
+    }
+  },
+  "users": [
+    {
+      "username": "admin",
+      "password": "$2b$10$awzkSplyKY3VM7WZcLGzE.K6NRhFV0fYfN0uVi1xAIlm6Sy9rxcV.",
+      "isAdmin": true
+    }
+  ]
+}

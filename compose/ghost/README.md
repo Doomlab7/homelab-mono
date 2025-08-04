@@ -1,0 +1,3 @@
+# Ghost
+
+Primary application server

@@ -1,0 +1,23 @@
+services:
+  re-director:
+    image: jensknipper/re-director:latest
+    ports:
+      - "8084:80"
+    environment:
+      - TZ=America/Chicago
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /tank/encrypted/docker/the-pit-zfs/re-director/data:/data
+    networks:
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.redirector.rule: "Host(`redirector.paynepride.com`)"
+      traefik.http.routers.redirector.tls.certresolver: letsencrypt
+      traefik.http.routers.redirector.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.redirector.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.redirector.loadbalancer.server.port: "80"
+networks:
+  phantomlink:
+    external: true

@@ -1,0 +1,6 @@
+default:
+  @just --list
+
+pull-conf:
+   #!/bin/bash
+   scp ghost:/tank/encrypted/docker/dashy/conf.yml /home/nic/projects/personal/homelab-compose/ghost/dashy/conf.yml

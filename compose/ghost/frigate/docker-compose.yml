@@ -1,0 +1,45 @@
+services:
+  frigate:
+    image: ghcr.io/blakeblackshear/frigate:stable
+    container_name: frigate
+    privileged: true # Adjust if you can de-privilege later
+    environment:
+      TZ: "America/Chicago"
+      LIBVA_DRIVER_NAME: "radeonsi"
+    env_file: .env
+    ports:
+      - "5000:5000"
+      - "8553:8554"
+      - "8555:8555/tcp"
+      - "8555:8555/udp"
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/tank/encrypted/docker/frigate:/config:rw"
+      # - "/tank/encrypted/docker/frigate-media:/media/frigate:rw"
+      - "/frigate-media:/media/frigate:rw"
+    tmpfs:
+      - /tmp/cache:rw,size=5000000000
+    devices:
+      - /dev/apex_0:/dev/apex_0
+      - /dev/dri/renderD128:/dev/dri/renderD128
+      - /dev/dri/card0:/dev/dri/card0
+    shm_size: 1024MB
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: "8g"
+    networks:
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.frigate.rule: "Host(`frigate.paynepride.com`)"
+      traefik.http.routers.frigate.tls.certresolver: letsencrypt
+      traefik.http.routers.frigate.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.frigate.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.frigate.loadbalancer.server.port: "5000"
+      traefik.http.routers.frigate.middlewares: "default-whitelist@file"
+
+networks:
+  phantomlink:
+    external: true

@@ -1,0 +1,21 @@
+# services:
+#   whose-turn-is-it:
+#     image: registry.paynepride.com/whose-turn-is-it:latest
+#     ports:
+#       - "8079:8000"
+#     environment:
+#       - PLAYERS=Dad,Mom,Athalia,Micaiah
+#     restart: unless-stopped
+#     labels:
+#       traefik.enable: "true"
+#       traefik.http.routers.whose_turn_is_it.rule: Host(`whose-turn-is-it.paynepride.com`)
+#       traefik.http.routers.whose_turn_is_it.tls.certresolver: letsencrypt
+#       traefik.http.routers.whose_turn_is_it.tls.domains[0].main: "paynepride.com"
+#       traefik.http.routers.whose_turn_is_it.tls.domains[0].sans: "*.paynepride.com"
+#       traefik.http.services.whose_turn_is_it.loadbalancer.server.port: "8000"
+#       traefik.http.routers.whose_turn_is_it.middlewares: "default-whitelist@file"
+#     networks:
+#       - phantomlink
+# networks:
+#   phantomlink:
+#     external: true

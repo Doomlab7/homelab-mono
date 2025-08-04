@@ -1,0 +1,83 @@
+services:
+  gh-star-sorter:
+    image: registry.paynepride.com/gh-star-sorter:latest
+    ports:
+      - "8077:8000"
+    volumes:
+      - /tank/encrypted/docker/the-pit-zfs/gh-star-sorter/data:/app/data
+    env_file: .env
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+    restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.gh_star_sorter.rule: Host(`gh-star-sorter.paynepride.com`)
+      traefik.http.routers.gh_star_sorter.tls.certresolver: letsencrypt
+      traefik.http.routers.gh_star_sorter.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.gh_star_sorter.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.gh_star_sorter.loadbalancer.server.port: "8000"
+    networks:
+      - phantomlink
+
+  dad-can-i-wear-this:
+    image: registry.paynepride.com/dad-can-i-wear:latest
+    ports:
+      - "8078:8000"
+    environment:
+      - OLLAMA_HOST=http://babyblue-aurora:11434
+      - OLLAMA_MODEL=qwen2:7b-instruct-q5_K_M
+      # - OLLAMA_MODEL=dad-can-i-wear-this
+
+    # depends_on:
+    #   - ollama
+    restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.dad_can_i_wear.rule: Host(`dad-can-i-wear-this.paynepride.com`)
+      traefik.http.routers.dad_can_i_wear.tls.certresolver: letsencrypt
+      traefik.http.routers.dad_can_i_wear.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.dad_can_i_wear.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.dad_can_i_wear.loadbalancer.server.port: "8000"
+    networks:
+      - phantomlink
+  whose-turn-is-it:
+    image: registry.paynepride.com/whose-turn-is-it:latest
+    ports:
+      - "8079:8000"
+    environment:
+      - PLAYERS=Dad,Mom,Athalia,Micaiah
+    restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.whose_turn_is_it.rule: Host(`whose-turn-is-it.paynepride.com`)
+      traefik.http.routers.whose_turn_is_it.tls.certresolver: letsencrypt
+      traefik.http.routers.whose_turn_is_it.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.whose_turn_is_it.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.whose_turn_is_it.loadbalancer.server.port: "8000"
+      traefik.http.routers.whose_turn_is_it.middlewares: "default-whitelist@file"
+    networks:
+      - phantomlink
+
+  gwl-marg-tracker:
+    image: registry.paynepride.com/gwl-margarita-tracker:0.0.7
+    ports:
+      - "8076:8000"
+    volumes:
+      - /tank/encrypted/docker/the-pit-zfs/gwl-margarita-tracker/data:/app/data
+    restart: unless-stopped
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.gwl_marg_tracker.rule: Host(`gwl-marg-tracker.paynepride.com`)
+      traefik.http.routers.gwl_marg_tracker.tls.certresolver: letsencrypt
+      traefik.http.routers.gwl_marg_tracker.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.gwl_marg_tracker.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.gwl_marg_tracker.loadbalancer.server.port: "8000"
+    networks:
+      - phantomlink
+networks:
+  phantomlink:
+    external: true

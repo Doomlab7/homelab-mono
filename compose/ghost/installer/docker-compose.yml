@@ -1,0 +1,19 @@
+services:
+  installer:
+    image: pypeaday/installer
+    ports:
+      - "3006:3000"
+    networks:
+      - phantomlink
+    restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.installer.rule: "Host(`i.paynepride.com`)"
+      traefik.http.routers.installer.tls.certresolver: letsencrypt
+      traefik.http.routers.installer.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.installer.tls.domains[0].sans: "*.paynepride.com"
+      # traefik.http.routers.installer.middlewares: "default-whitelist@file"
+      traefik.http.services.installer.loadbalancer.server.port: "3000"
+networks:
+  phantomlink:
+    external: true

@@ -1,0 +1,26 @@
+services:
+  web:
+    image: eigenfocus/eigenfocus:1.0.0-free
+    restart: unless-stopped
+    volumes:
+      - /tank/encrypted/docker/eigenfocus/app-data:/eigenfocus-app/app-data
+    env_file: .env
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    ports:
+      - 3001:3000
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.eigenfoucus.rule: "Host(`eigenfocus.paynepride.com`)"
+      traefik.http.routers.eigenfoucus.tls.certresolver: "letsencrypt"
+      traefik.http.routers.eigenfoucus.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.eigenfoucus.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.eigenfoucus.loadbalancer.server.port: "3000"
+      traefik.http.routers.eigenfoucus.middlewares: default-whitelist@file
+    networks:
+      - phantomlink
+networks:
+  phantomlink:
+    external: true

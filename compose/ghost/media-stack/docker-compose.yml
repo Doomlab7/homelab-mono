@@ -1,0 +1,237 @@
+services:
+  jellyfin:
+    container_name: jellyfin
+    image: linuxserver/jellyfin
+    volumes:
+      - /tank/encrypted/docker/media-stack/jellyfin/config:/config:rw
+      - /tank/encrypted/nas/media/movies:/movies:ro
+      - /tank/encrypted/nas/media/music:/music:ro
+      - /tank/encrypted/nas/media/tv:/tv:ro
+      - /tank/encrypted/nas/media/audiobooks:/audiobooks:ro
+      - /tank/encrypted/nas/media/downloads/pinchflat/downloads/music:/pinchflat:ro
+      # - '{{ youtubedlmaterial_downloads_directory }}:/youtube:ro'
+      - /tank/encrypted/docker/media-stack/jellyfin/migrate-from-bare-metal/etc:/etc/jellyfin:rw'
+      - /tank/encrypted/docker/media-stack/jellyfin/migrate-from-bare-metal/var/lib/jellyfin:/var/lib/jellyfin:rw'
+      - /tank/encrypted/docker/media-stack/jellyfin/migrate-from-bare-metal/var/log/jellyfin:/var/log/jellyfin:rw'
+      - /tank/encrypted/docker/media-stack/jellyfin/migrate-from-bare-metal/var/cache/jellyfin:/var/cache/jellyfin:rw'
+    ports:
+      - '8896:8096'
+      - '8928:8920'
+      # Make it discoverable
+      - 7359:7359/udp
+      - 1900:1900/udp
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+      DOCKER_MODS: linuxserver/mods:jellyfin-amd|ghcr.io/themepark-dev/theme.park:jellyfin
+      TP_THEME: Hotline
+    env_file: .env
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 8g
+    group_add:
+      - "109" # getent group render | cut -d: -f3
+      - "44" # getent group video | cut -d: -f3
+    devices:
+      - /dev/dri/:/dev/dri/
+    networks:
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.jellyfin.rule: "Host(`jellyfin.paynepride.com`)"
+      traefik.http.routers.jellyfin.tls.certresolver: letsencrypt
+      traefik.http.routers.jellyfin.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.jellyfin.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.jellyfin.loadbalancer.server.port: 8096
+      # traefik.http.routers.jellyfin.middlewares: default-whitelist@file
+  jellystat-db:
+    image: postgres:15.2
+    container_name: jellystat-db
+    environment:
+      TZ: "America/Chicago"
+      PUID: "1000"
+      PGID: "1000"
+      POSTGRES_DB: "jfstat"
+    env_file: .env
+    volumes:
+      - "/tank/encrypted/docker/media-stack/jellystat/postgres-data:/var/lib/postgresql/data:rw"
+    restart: unless-stopped
+    networks:
+      - phantomlink
+    deploy:
+      resources:
+        limits:
+          memory: "1024m"
+
+  jellystat:
+    image: "cyfershepard/jellystat:1.1.0"
+    container_name: jellystat
+    env_file: .env
+    environment:
+      TZ: "America/Chicago"
+      PUID: "1000"
+      PGID: "1000"
+      POSTGRES_IP: "jellystat-db"
+      POSTGRES_PORT: "5432"
+    ports:
+      - "3004:3000"
+    volumes:
+      - "/tank/encrypted/docker/media-stack/jellystat/backup-data:/app/backend/backup-data:rw"
+    networks:
+      - phantomlink
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: "1024m"
+    depends_on:
+      - jellystat-db
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.jellystat.rule: "Host(`jellystat.paynepride.com`)"
+      traefik.http.routers.jellystat.tls.certresolver: letsencrypt
+      traefik.http.routers.jellystat.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.jellystat.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.routers.jellystat.middlewares: "default-whitelist@file"
+      traefik.http.services.jellystat.loadbalancer.server.port: "3000"
+  # airsonic:
+  #   container_name: airsonic
+  #   image: lscr.io/linuxserver/airsonic-advanced:latest
+  #   volumes:
+  #     - "/tank/encrypted/docker/media-stack/airsonic/config:/config:rw"
+  #     - "/tank/encrypted/docker/media-stack/airsonic/playlists:/playlists:rw"
+  #     - "/tank/encrypted/nas/media/music:/music:rw"
+  #     - "/tank/encrypted/nas/media/podcasts:/podcasts:rw"
+  #   ports:
+  #     - '4040:4040'
+  #   environment:
+  #     PUID: 1000
+  #     PGID: 1000
+  #     TZ: America/Chicago
+  #   restart: unless-stopped
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 1g
+  #   networks:
+  #     - phantomlink
+  #   labels:
+  #     traefik.enable: "true"
+  #     traefik.http.routers.airsonic.rule: "Host(`airsonic.paynepride.com`)"
+  #     traefik.http.routers.airsonic.tls.certresolver: letsencrypt
+  #     traefik.http.routers.airsonic.tls.domains[0].main: "paynepride.com"
+  #     traefik.http.routers.airsonic.tls.domains[0].sans: "*.paynepride.com"
+  #     traefik.http.services.airsonic.loadbalancer.server.port: 4040
+  #     # traefik.http.routers.airsonic.middlewares: default-whitelist@file
+  # booksonic:
+  #   container_name: booksonic
+  #   image: lscr.io/linuxserver/booksonic-air:latest
+  #   volumes:
+  #     - "/tank/encrypted/docker/media-stack/booksonic/config:/config:rw"
+  #     - "/tank/encrypted/docker/media-stack/booksonic/playlists:/playlists:rw"
+  #     - "/tank/encrypted/nas/media/audiobooks:/audiobooks:rw"
+  #     - "/tank/encrypted/nas/media/podcasts:/podcasts:rw"
+  #   ports:
+  #     - '4041:4040'
+  #   environment:
+  #     PUID: 1000
+  #     PGID: 1000
+  #     TZ: America/Chicago
+  #   restart: unless-stopped
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 1g
+  #   networks:
+  #     - phantomlink
+  #   labels:
+  #     traefik.enable: "true"
+  #     traefik.http.routers.booksonic.rule: "Host(`booksonic.paynepride.com`)"
+  #     traefik.http.routers.booksonic.tls.certresolver: letsencrypt
+  #     traefik.http.routers.booksonic.tls.domains[0].main: "paynepride.com"
+  #     traefik.http.routers.booksonic.tls.domains[0].sans: "*.paynepride.com"
+  #     traefik.http.services.booksonic.loadbalancer.server.port: 4040
+  #     # traefik.http.routers.booksonic.middlewares: default-whitelist@file
+  audiobookshelf:
+    container_name: audiobookshelf
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    ports:
+      - 13378:80
+    volumes:
+      - /tank/encrypted/nas/media/audiobooks:/audiobooks
+      - /tank/encrypted/nas/media/podcasts:/podcasts
+      - /tank/encrypted/docker/media-stack/audiobookshelf/config:/config
+      - /tank/encrypted/docker/media-stack/audiobookshelf/metadata:/metadata
+      - /tank/encrypted/nas/media/downloads/pinchflat/downloads:/pinchflat
+    restart: unless-stopped
+    environment:
+      - TZ=America/Chicago
+      - PUID=1000
+      - PGID=1000
+    networks:
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.audiobookshelf.rule: "Host(`audiobookshelf.paynepride.com`)"
+      traefik.http.routers.audiobookshelf.tls.certresolver: letsencrypt
+      traefik.http.routers.audiobookshelf.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.audiobookshelf.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.audiobookshelf.loadbalancer.server.port: 80
+      # traefik.http.routers.audiobookshelf.middlewares: default-whitelist@file
+  ubooquity:
+    image: linuxserver/ubooquity:latest
+    container_name: ubooquity
+    ports:
+      - "2202:2202"
+      - "2203:2203"
+    volumes:
+      - /tank/encrypted/nas/media/books:/books
+      - /tank/encrypted/nas/media/comics:/comics
+      - /tank/encrypted/docker/media-stack/ubooquity/config:/config
+      - /tank/encrypted/docker/media-stack/ubooquity/files:/files
+    restart: unless-stopped
+    environment:
+      - TZ=America/Chicago
+    networks:
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.ubooquity.rule: "Host(`ubooquity.paynepride.com`)"
+      traefik.http.routers.ubooquity.tls.certresolver: letsencrypt
+      traefik.http.routers.ubooquity.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.ubooquity.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.ubooquity.loadbalancer.server.port: 2202
+      # traefik.http.routers.ubooquity.middlewares: default-whitelist@file
+  pinchflat:
+    container_name: "pinchflat"
+    image: "ghcr.io/kieraneglin/pinchflat:latest"
+    ports:
+      - "8945:8945"
+    volumes:
+      - "/tank/encrypted/docker/the-pit-zfs/pinchflat/config:/config:rw"
+      - "/tank/encrypted/nas/media/downloads/pinchflat/downloads:/downloads:rw"
+    environment:
+      TZ: "America/Chicago"
+      PUID: "1000"
+      PGID: "1000"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: "4g"
+    networks:
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.pinchflat.rule: Host(`pinchflat.paynepride.com`)
+      traefik.http.routers.pinchflat.tls.certresolver: letsencrypt
+      traefik.http.routers.pinchflat.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.pinchflat.tls.domains[0].sans: "*.paynepride.com"
+      # traefik.http.routers.pinchflat.middlewares: default-whitelist@file
+      traefik.http.services.pinchflat.loadbalancer.server.port: 8945
+networks:
+  phantomlink:
+    external: true

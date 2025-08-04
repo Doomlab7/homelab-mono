@@ -1,0 +1,117 @@
+services:
+  opensearch:
+    container_name: temporal-opensearch
+    environment:
+      - discovery.type=single-node
+      - OPENSEARCH_JAVA_OPTS=-Xms256m -Xmx256m
+      - cluster.routing.allocation.disk.threshold_enabled=true
+      - cluster.routing.allocation.disk.watermark.low=512mb
+      - cluster.routing.allocation.disk.watermark.high=256mb
+      - cluster.routing.allocation.disk.watermark.flood_stage=128mb
+      - plugins.security.disabled=true
+    image: opensearchproject/opensearch:${OPENSEARCH_VERSION}
+    ulimits:
+      #      memlock:
+      #        soft: -1 # Set memlock to unlimited (no soft or hard limit)
+      #        hard: -1
+      nofile:
+        soft: 65536 # Maximum number of open files for the opensearch user - set to at least 65536
+        hard: 65536
+    networks:
+      - temporal-network
+    expose:
+      - 9200
+    volumes:
+      - /tank/encrypted/docker/temporal-zfs/opensearch/data:/var/lib/opensearch/data
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.opensearch.rule: Host(`opensearch.paynepride.com`)
+      traefik.http.routers.opensearch.tls.certresolver: letsencrypt
+      traefik.http.routers.opensearch.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.opensearch.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.routers.opensearch.middlewares: default-whitelist@file
+      traefik.http.services.opensearch.loadbalancer.server.port: 9200
+  postgresql:
+    container_name: temporal-postgresql
+    environment:
+      POSTGRES_PASSWORD: temporal
+      POSTGRES_USER: temporal
+    image: postgres:${POSTGRESQL_VERSION}
+    networks:
+      - temporal-network
+    expose:
+      - 5432
+    volumes:
+      - /tank/encrypted/docker/temporal-zfs/postgres/data:/var/lib/postgresql/data
+  temporal:
+    container_name: temporal
+    depends_on:
+      - postgresql
+      # - opensearch
+    environment:
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=temporal
+      - POSTGRES_PWD=temporal
+      - POSTGRES_SEEDS=postgresql
+      - DYNAMIC_CONFIG_FILE_PATH=/etc/temporal/config/dynamicconfig/development-sql.yaml
+      - ENABLE_ES=false
+      # - ES_SEEDS=opensearch
+      # - ES_VERSION=v7
+    image: temporalio/auto-setup:${TEMPORAL_VERSION}
+    networks:
+      - temporal-network
+    ports:
+      - 7233:7233
+    volumes:
+      - /tank/encrypted/docker/temporal-zfs/dynamicconfig:/etc/temporal/config/dynamicconfig
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.temporal.rule: Host(`temporal.paynepride.com`)
+      traefik.http.routers.temporal.tls.certresolver: letsencrypt
+      traefik.http.routers.temporal.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.temporal.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.routers.temporal.middlewares: default-whitelist@file
+      traefik.http.services.temporal.loadbalancer.server.port: 7233
+      # This is for grpc
+      traefik.http.services.temporal.loadbalancer.server.scheme: h2c
+  temporal-admin-tools:
+    container_name: temporal-admin-tools
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CLI_ADDRESS=temporal:7233
+    image: temporalio/admin-tools:${TEMPORAL_ADMINTOOLS_VERSION}
+    networks:
+      - temporal-network
+    stdin_open: true
+    tty: true
+  temporal-ui:
+    container_name: temporal-ui
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS='*'
+    image: temporalio/ui:${TEMPORAL_UI_VERSION}
+    networks:
+      - temporal-network
+    ports:
+      - 8071:8080
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.temporal_ui.rule: Host(`temporal-ui.paynepride.com`)
+      traefik.http.routers.temporal_ui.tls.certresolver: letsencrypt
+      traefik.http.routers.temporal_ui.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.temporal_ui.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.routers.temporal_ui.middlewares: default-whitelist@file
+      traefik.http.services.temporal_ui.loadbalancer.server.port: 8080
+networks:
+  temporal-network:
+    driver: bridge
+    name: temporal-network
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.74.0.0/16

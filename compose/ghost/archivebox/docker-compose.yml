@@ -1,0 +1,76 @@
+services:
+  archivebox:
+    image: archivebox/archivebox:0.7.2
+    container_name: archivebox
+    env_file: .env
+    volumes:
+      - /tank/encrypted/docker/archivebox/data:/data
+    ports:
+      - "8004:8000"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    labels:
+      traefik.enable: true
+      traefik.http.routers.archivebox.rule: Host(`archivebox.paynepride.com`)
+      traefik.http.routers.archivebox.tls.certresolver: letsencrypt
+      traefik.http.routers.archivebox.tls.domains[0].main: paynepride.com
+      traefik.http.routers.archivebox.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.archivebox.loadbalancer.server.port: "8000"
+
+  # archivebox-novnc:
+  #   image: theasp/novnc:latest
+  #   container_name: archivebox-novnc
+  #   env_file: .env
+  #   ports:
+  #     - "8887:8080"
+  #   restart: unless-stopped
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: "1g"
+
+  archivebox-telegram-bot:
+    image: pypeaday/archivebox-telegram-bot:latest
+    container_name: archivebox-telegram-bot
+    env_file: .env
+    volumes:
+      - /tank/encrypted/docker/archivebox/cookies.txt:/app/cookies.txt:ro
+      - /tank/encrypted/docker/archivebox/data:/data:ro
+    restart: unless-stopped
+    depends_on:
+      - archivebox
+    deploy:
+      resources:
+        limits:
+          memory: "1g"
+
+  archivebox-scheduler:
+    image: archivebox/archivebox:0.7.2
+    container_name: archivebox-scheduler
+    env_file: .env
+    volumes:
+      - /tank/encrypted/docker/archivebox/data:/data
+    command: schedule --foreground --update --every=day
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: "1g"
+
+  sonic:
+    image: valeriansaliou/sonic:latest
+    container_name: sonic
+    env_file: .env
+    ports:
+      - "1491:1491"
+    volumes:
+      - /tank/encrypted/docker/archivebox/sonic:/var/lib/sonic/store
+      - /tank/encrypted/docker/archivebox/sonic.cfg:/etc/sonic.cfg
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: "1g"

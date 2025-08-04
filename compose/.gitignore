@@ -1,0 +1,11 @@
+.env
+**/data/*
+ghost/archivebox/cookies.txt
+ghost/archivebox/sonic.cfg
+ghost/arrs/servers.json
+ghost/nitter/nitter.conf
+ghost/nitter/twitter-credentials.json
+ghost/paperless-ngx/.db.env
+**/private/*
+key
+babyblue/code-server/config

@@ -1,0 +1,20 @@
+services:
+  mcphub:
+    image: samanhappy/mcphub
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./mcp_settings.json:/app/mcp_settings.json
+      - /home/nic/docker-volume-data//mcphub/data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+  qdrant:
+    image: qdrant/qdrant
+    container_name: qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+    deploy:
+      resources:
+        limits:
+          memory: "500m"

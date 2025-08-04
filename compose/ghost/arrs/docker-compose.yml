@@ -1,0 +1,364 @@
+services:
+  readarr:
+    container_name: readarr
+    image: lscr.io/linuxserver/readarr:develop
+    volumes:
+      - /tank/encrypted/nas/media/books:/data/books:rw
+      - /tank/encrypted/nas/media/downloads:/data/downloads:rw
+      - /tank/encrypted/docker/readarr/config:/config:rw
+    ports:
+      - 8787:8787
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    networks:
+      # - arr_network  # Connect this service to the ARR network
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.readarr.rule: "Host(`readarr.paynepride.com`)"
+      traefik.http.routers.readarr.tls.certresolver: letsencrypt
+      traefik.http.routers.readarr.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.readarr.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.readarr.loadbalancer.server.port: 8787
+      traefik.http.routers.readarr.middlewares: default-whitelist@file
+  audioreadarr:
+    container_name: audioreadarr
+    image: lscr.io/linuxserver/readarr:develop
+    volumes:
+      - /tank/encrypted/nas/media/audiobooks:/data/audiobooks:rw
+      - /tank/encrypted/nas/media/downloads:/data/downloads:rw
+      - /tank/encrypted/docker/audioreadarr/config:/config:rw
+    ports:
+      - 8788:8787
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    networks:
+      # - arr_network  # Connect this service to the ARR network
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.audioreadarr.rule: "Host(`audioreadarr.paynepride.com`)"
+      traefik.http.routers.audioreadarr.tls.certresolver: letsencrypt
+      traefik.http.routers.audioreadarr.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.audioreadarr.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.audioreadarr.loadbalancer.server.port: 8787
+      traefik.http.routers.audioreadarr.middlewares: default-whitelist@file
+  lidarr:
+    container_name: lidarr
+    image: linuxserver/lidarr
+    volumes:
+      - /tank/encrypted/nas/media/music:/data/music:rw
+      - /tank/encrypted/nas/media/downloads:/data/downloads:rw
+      - /tank/encrypted/docker/lidarr/config:/config:rw
+    ports:
+      - 8686:8686
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    networks:
+      # - arr_network  # Connect this service to the ARR network
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.lidarr.rule: "Host(`lidarr.paynepride.com`)"
+      traefik.http.routers.lidarr.tls.certresolver: letsencrypt
+      traefik.http.routers.lidarr.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.lidarr.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.lidarr.loadbalancer.server.port: 8686
+      traefik.http.routers.lidarr.middlewares: default-whitelist@file
+  radarr:
+    container_name: radarr
+    image: linuxserver/radarr
+    volumes:
+      - /tank/encrypted/nas/media/movies:/data/movies:rw
+      - /tank/encrypted/nas/media/downloads:/data/downloads:rw
+      - /tank/encrypted/docker/radarr/config:/config:rw
+    ports:
+      - 7878:7878
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    networks:
+      # - arr_network  # Connect this service to the ARR network
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.radarr.rule: "Host(`radarr.paynepride.com`)"
+      traefik.http.routers.radarr.tls.certresolver: letsencrypt
+      traefik.http.routers.radarr.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.radarr.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.radarr.loadbalancer.server.port: 7878
+      traefik.http.routers.radarr.middlewares: default-whitelist@file
+  sonarr:
+    container_name: sonarr
+    image: linuxserver/sonarr
+    volumes:
+      - /tank/encrypted/nas/media/tv:/data/tv:rw
+      - /tank/encrypted/nas/media/downloads:/data/downloads:rw
+      - /tank/encrypted/docker/sonarr/config:/config:rw
+    ports:
+      - 8989:8989
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    networks:
+      # - arr_network  # Connect this service to the ARR network
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.sonarr.rule: "Host(`sonarr.paynepride.com`)"
+      traefik.http.routers.sonarr.tls.certresolver: letsencrypt
+      traefik.http.routers.sonarr.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.sonarr.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.sonarr.loadbalancer.server.port: 8989
+      traefik.http.routers.sonarr.middlewares: default-whitelist@file
+  bazarr:
+    container_name: bazarr
+    image: linuxserver/bazarr
+    volumes:
+      - /tank/encrypted/nas/media/tv:/data/tv:rw
+      - /tank/encrypted/nas/media/movies:/data/movies:rw
+      - /tank/encrypted/docker/bazarr/config:/config:rw
+    ports:
+      - 6767:6767
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    networks:
+      # - arr_network  # Connect this service to the ARR network
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.bazarr.rule: "Host(`bazarr.paynepride.com`)"
+      traefik.http.routers.bazarr.tls.certresolver: letsencrypt
+      traefik.http.routers.bazarr.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.bazarr.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.bazarr.loadbalancer.server.port: 6767
+      traefik.http.routers.bazarr.middlewares: default-whitelist@file
+  ombi:
+    container_name: ombi
+    image: linuxserver/ombi
+    volumes:
+      - /tank/encrypted/docker/ombi/config:/config:rw
+    ports:
+      - 3579:3579
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    networks:
+      # - arr_network  # Connect this service to the ARR network
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.ombi.rule: "Host(`ombi.paynepride.com`)"
+      traefik.http.routers.ombi.tls.certresolver: letsencrypt
+      traefik.http.routers.ombi.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.ombi.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.ombi.loadbalancer.server.port: 3579
+  jellyseerr:
+    container_name: jellyseerr
+    image: fallenbagel/jellyseerr:latest
+    volumes:
+      - /tank/encrypted/docker/jellyseerr/config:/app/config:rw
+    ports:
+      - 5055:5055
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    networks:
+      # - arr_network  # Connect this service to the ARR network
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.jellyseerr.rule: "Host(`jellyseerr.paynepride.com`)"
+      traefik.http.routers.jellyseerr.tls.certresolver: letsencrypt
+      traefik.http.routers.jellyseerr.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.jellyseerr.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.jellyseerr.loadbalancer.server.port: 5055
+  prowlarr:
+    container_name: prowlarr
+    image: ghcr.io/linuxserver/prowlarr:develop
+    volumes:
+      - /tank/encrypted/docker/prowlarr/config:/config:rw
+    ports:
+      - 9696:9696
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    networks:
+      - phantomlink
+      # - arr_network  # Connect this service to the ARR network
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.prowlarr.rule: "Host(`prowlarr.paynepride.com`)"
+      traefik.http.routers.prowlarr.tls.certresolver: letsencrypt
+      traefik.http.routers.prowlarr.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.prowlarr.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.prowlarr.loadbalancer.server.port: 9696
+      traefik.http.routers.prowlarr.middlewares: default-whitelist@file
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    networks:
+      # - arr_network
+      - phantomlink
+    env_file: .env
+    environment:
+      - VPN_SERVICE_PROVIDER=protonvpn
+      - VPN_TYPE=openvpn
+      - SERVER_COUNTRIES="United States,Spain,Sweden,Japan,Norway"
+    # https://github.com/qdm12/gluetun-wiki/blob/main/setup/port-mapping.md
+    ports:
+      - 9091:9091  # transmission webui
+      - "51413:51413"  # transmission port
+      - "51413:51413/udp"  # transmission port
+  transmission:
+    container_name: transmission
+    image: linuxserver/transmission:latest
+    volumes:
+      - /tank/encrypted/docker/transmission/config:/config:rw
+      - /tank/encrypted/nas/media/downloads:/data/downloads:rw
+      - /tank/encrypted/nas/media/torrents:/watch:rw
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+      DOCKER_MODS: linuxserver/mods:transmission-env-var-settings|linuxserver/mods:transmission-floodui
+      TRANSMISSION_BIND_ADDRESS_IPV4: 0.0.0.0
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    network_mode: "service:gluetun"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.transmission.rule: "Host(`transmission.paynepride.com`)"
+      traefik.http.routers.transmission.tls.certresolver: letsencrypt
+      traefik.http.routers.transmission.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.transmission.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.transmission.loadbalancer.server.port: 9091
+      traefik.http.routers.transmission.middlewares: default-whitelist@file
+
+  tdarr:
+    container_name: tdarr
+    image: ghcr.io/haveagitgat/tdarr:latest
+    volumes:
+      - "/tank/encrypted/docker/tdarr/config:/app/config:rw"
+      - "/tank/encrypted/docker/tdarr/server:/app/server:rw"
+      - "/tank/encrypted/docker/tdarr/logs:/app/logs:rw"
+      - "/tank/encrypted/nas/media/movies:/media/movies:rw"
+      - "/tank/encrypted/nas/media/tv:/media/tv:rw"
+      # things I've copied over and will downsample a ton for phone use only
+      - "/tank/travel-media:/media/travel-media:rw"
+      # - "/tank/encrypted/nas/media/youtube:/media/youtube:rw"
+      - "/tank/tdarr_cache:/temp:rw"
+    ports:
+      - "8265:8265" # webui
+      - "8266:8266" # server
+      - "8267:8267" # internal node
+      - "8268:8268" # Example extra node port
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+      DOCKER_MODS: linuxserver/mods:tdarr-env-var-settings|linuxserver/mods:tdarr-floodui
+      UMASK_SET: "002"
+      serverIP: "0.0.0.0"
+      serverPort: "8266"
+      webUIPort: "8265"
+      internalNode: "true"
+      nodeID: "InternalTdarrNode"
+      nodeIP: "ghost"
+      nodePort: "8267"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    networks:
+      # - arr_network
+      - phantomlink
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.tdarr.rule: "Host(`tdarr.paynepride.com`)"
+      traefik.http.routers.tdarr.tls.certresolver: letsencrypt
+      traefik.http.routers.tdarr.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.tdarr.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.tdarr.loadbalancer.server.port: 8265
+      traefik.http.routers.tdarr.middlewares: default-whitelist@file
+networks:
+  # Custom network for the ARR suite services
+  # arr_network:
+  #   driver: bridge
+  #   ipam:
+  #     driver: default
+  #     config:
+  #       - subnet: 172.31.0.0/16
+
+  # # VPN network (can be extended or customized later)
+  # vpn_network:
+  #   driver: bridge
+  
+  phantomlink:
+    external: true

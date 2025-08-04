@@ -1,0 +1,72 @@
+services:
+  meme_search_pro:
+    image: ghcr.io/neonwatty/meme_search_pro:latest
+    container_name: meme-search-pro
+    environment: # <-- you can adjust these values in your .env file
+      DATABASE_URL: "postgres://postgres:postgres@meme-search-db:${DB_PORT:-5432}/meme_search"
+      APP_HOST: "${APP_HOST:-meme-search.paynepride.com}"
+      APP_PORT: "${APP_PORT:-3006}"
+      GEN_PORT: "${GEN_PORT:-8006}"
+      DOCKER_HOST_INTERNAL: "${DOCKER_HOST_INTERNAL:-host.docker.internal}"
+    ports:
+      - "${APP_PORT:-3006}:3000" # <--  adjust to desired local port for this service in your .env file
+    depends_on:
+      meme_search_db:
+        condition: service_healthy
+    volumes: # <-- any additional meme directory must be mounted here
+      # - ./meme_search_pro/memes/:/rails/public/memes # <-- example meme directories
+      - /tank/encrypted/docker/nextcloud-zfs/nextcloud/data/nic/files/Home/nic/MemesAndTweets/:/rails/public/memes/my-memes:ro
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.meme_search.rule: "Host(`meme-search.paynepride.com`)"
+      traefik.http.routers.meme_search.tls.certresolver: letsencrypt
+      traefik.http.routers.meme_search.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.meme_search.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.meme_search.loadbalancer.server.port: 3000
+      # traefik.http.routers.meme_search.middlewares: default-whitelist@file
+
+  image_to_text_generator:
+    image: ghcr.io/neonwatty/image_to_text_generator:latest
+    container_name: meme-search-image-to-text
+    environment: # <-- you can adjust these values in your .env file
+      APP_HOST: "${APP_HOST:-meme-search.paynepride.com}"
+      APP_PORT: "${APP_PORT:-3006}"
+      GEN_PORT: "${GEN_PORT:-8006}"
+      DOCKER_HOST_INTERNAL: "${DOCKER_HOST_INTERNAL:-ghost}"
+    ports:
+      - "${GEN_PORT:-8006}:8000" # <--  adjust to desired local port for this service in your .env file)"
+    volumes: # <-- any additional meme directory must be mounted here
+      # - ./meme_search_pro/memes/:/app/public/memes # <-- example meme directories
+      - /tank/encrypted/docker/nextcloud-zfs/nextcloud/data/nic/files/Home/nic/MemesAndTweets/:/app/public/memes/my-memes:ro
+      # - /tank/encrypted/docker/nextcloud-zfs/nextcloud/data/nic/files/Home/nic/MemesAndTweets/:/rails/public/my-personal-memes:ro
+      - /tank/encrypted/docker/meme_search_pro/db_data/image_to_text_generator:/app/db
+      - /tank/encrypted/docker/meme_search_pro/models:/root/.cache/huggingface
+    deploy:
+      resources:
+        limits: # <-- roughly tested min memory for cpu usage
+          memory: 12GB
+        # reservations: # <-- uncomment for gpu usage
+        #   devices:
+        #     - driver: nvidia
+        #       count: 1
+        #       capabilities: [gpu]
+    restart: unless-stopped
+
+  meme_search_db:
+    image: pgvector/pgvector:pg17
+    container_name: meme-search-db # note: must use - and not _ as ActiveRecord uses URI::RFC2396_Parser to parse database URLs
+    volumes:
+      - /tank/encrypted/docker/meme_search_pro/db_data/meme-search-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: meme_search
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "${DB_PORT:-5432}:5432" # <--  adjust to desired local port for this service in your .env file
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+

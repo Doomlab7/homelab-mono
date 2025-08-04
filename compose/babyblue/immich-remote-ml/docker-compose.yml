@@ -1,0 +1,23 @@
+name: immich_remote_ml
+
+services:
+  immich-machine-learning:
+    container_name: immich-machine-learning
+    # For hardware acceleration, add one of -[armnn, cuda, openvino] to the image tag.
+    # Example tag: ${IMMICH_VERSION:-release}-cuda
+    # Find the version I'm using in inventory/all/group_vars.production
+    image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}-cuda
+    extends:
+      file: hwaccel.ml.yml
+      service: cuda
+    volumes:
+      - model-cache:/cache
+    restart: always
+    ports:
+      - 3003:3003
+    # network_mode: host
+      # # TODO: tailscale sidecar?
+
+volumes:
+  model-cache:
+

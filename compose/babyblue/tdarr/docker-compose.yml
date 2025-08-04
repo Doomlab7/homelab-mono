@@ -1,0 +1,39 @@
+services:
+  tdarr-node:
+    container_name: tdarr-node
+    image: ghcr.io/haveagitgat/tdarr_node:latest
+    restart: unless-stopped
+    networks: 
+      - phantomlink
+    environment:
+      - TZ=America/Chicago
+      - PUID=1000
+      - PGID=1000
+      - UMASK_SET=002
+      - nodeName=Aurora
+      - serverIP=ghost
+      - serverPort=8266
+      - inContainer=true
+      - ffmpegVersion=7
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - NVIDIA_VISIBLE_DEVICES=all
+
+    volumes:
+      - ./data/configs:/app/configs
+      - ./data/logs:/app/logs
+      # - /media:/media
+      - /var/mnt/nas-media/tv/:/media/tv/:rw
+      # - /transcode_cache:/temp
+      - "/var/mnt/tank/tdarr_cache:/temp:rw"
+    devices:
+      - /dev/dri:/dev/dri
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+networks:
+  phantomlink:
+    external: true

@@ -1,0 +1,25 @@
+services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:sts
+    restart: unless-stopped
+    ports:
+      - "9002:9000"
+    volumes:
+      - "/tank/encrypted/docker/portainer/config:/data:rw"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/etc/timezone:/etc/timezone:ro"
+    environment:
+      - TZ=America/Chicago
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.portainer.rule: "Host(`portainer.paynepride.com`)"
+      traefik.http.routers.portainer.tls.certresolver: "letsencrypt"
+      traefik.http.routers.portainer.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.portainer.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.portainer.loadbalancer.server.port: "9000"
+      traefik.http.routers.portainer.middlewares: "default-whitelist@file"
+    deploy:
+      resources:
+        limits:
+          memory: "1g"

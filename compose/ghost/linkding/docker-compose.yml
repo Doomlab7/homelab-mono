@@ -1,0 +1,31 @@
+services:
+  linkding:
+    image: "sissbruecker/linkding:latest"
+    container_name: "linkding"
+    ports:
+      - "9093:9090"
+    environment:
+      TZ: "America/Chicago"
+      PUID: "1000"
+      PGID: "1000"
+    env_file: .env
+    volumes:
+      - "/tank/encrypted/docker/linkding:/etc/linkding/data:rw"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: "1g"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.linkding.rule: Host(`linkding.paynepride.com`)
+      traefik.http.routers.linkding.tls.certresolver: letsencrypt
+      traefik.http.routers.linkding.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.linkding.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.linkding.loadbalancer.server.port: "9090"
+    networks:
+      - phantomlink
+
+networks:
+  phantomlink:
+    external: true

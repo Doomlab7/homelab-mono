@@ -1,0 +1,20 @@
+services:
+  duplicati:
+    image: lscr.io/linuxserver/duplicati:latest
+    container_name: duplicati
+    env_file: .env
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      # - SETTINGS_ENCRYPTION_KEY=
+      # - CLI_ARGS= #optional
+      # - DUPLICATI__WEBSERVICE_PASSWORD= #optional
+    volumes:
+      - /tank/encrypted/docker/the-pit-zfs/duplicati/config:/config
+      # TODO: not sure what each of these is specifically...
+      - /path/to/backups:/backups
+      - /path/to/source:/source
+    ports:
+      - 8200:8200
+    restart: unless-stopped

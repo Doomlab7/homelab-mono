@@ -1,0 +1,66 @@
+services:
+  container_registry:
+    image: "registry:2"
+    container_name: "container-registry"
+    ports:
+      - "5001:5000"
+    environment:
+      TZ: "America/Chicago"
+      PUID: "1000"
+      PGID: "1000"
+      REGISTRY_HTTP_HEADERS_Access-Control-Allow-Origin: "[https://registry-ui.paynepride.com]"
+      REGISTRY_HTTP_HEADERS_Access-Control-Allow-Methods: '[HEAD,GET,OPTIONS,DELETE]'
+      REGISTRY_HTTP_HEADERS_Access-Control-Allow-Credentials: '[true]'
+      REGISTRY_HTTP_HEADERS_Access-Control-Allow-Headers: '[Authorization,Accept,Cache-Control]'
+      REGISTRY_HTTP_HEADERS_Access-Control-Expose-Headers: '[Docker-Content-Digest]'
+      REGISTRY_STORAGE_DELETE_ENABLED: 'true'
+    volumes:
+      - "/tank/encrypted/docker/container_registry/data:/var/lib/registry:rw"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: "2g"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.container_registry.rule: Host(`registry.paynepride.com`)
+      traefik.http.routers.container_registry.tls.certresolver: letsencrypt
+      traefik.http.routers.container_registry.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.container_registry.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.container_registry.loadbalancer.server.port: "5000"
+      traefik.http.routers.container_registry.middlewares: "default-whitelist@file"
+
+  container_registry_ui:
+    image: "joxit/docker-registry-ui:main"
+    container_name: container-registry-ui
+    ports:
+      - "8087:80"
+    environment:
+      TZ: "America/Chicago"
+      PUID: "1000"
+      PGID: "1000"
+      SINGLE_REGISTRY: "true"
+      REGISTRY_TITLE: Docker Registry UI
+      DELETE_IMAGES: "true"
+      SHOW_CONTENT_DIGEST: "true"
+      NGINX_PROXY_PASS_URL: "http://container-registry:5000"
+      SHOW_CATALOG_NB_TAGS: "true"
+      CATALOG_MIN_BRANCHES: "1"
+      CATALOG_MAX_BRANCHES: "1"
+      TAGLIST_PAGE_SIZE: "100"
+      REGISTRY_SECURED: "false"
+      CATALOG_ELEMENTS_LIMIT: "1000"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: "2g"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.container_registry_ui.rule: Host(`registry-ui.paynepride.com`)
+      traefik.http.routers.container_registry_ui.tls.certresolver: letsencrypt
+      traefik.http.routers.container_registry_ui.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.container_registry_ui.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.container_registry_ui.loadbalancer.server.port: "80"
+      traefik.http.routers.container_registry_ui.middlewares: "default-whitelist@file"
+
