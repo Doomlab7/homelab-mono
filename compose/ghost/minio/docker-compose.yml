@@ -35,7 +35,7 @@ services:
       traefik.http.routers.minio-api.tls.domains[0].main: "paynepride.com"
       traefik.http.routers.minio-api.tls.domains[0].sans: "*.paynepride.com"
       traefik.http.services.minio-api-svc.loadbalancer.server.port: 9000
-      traefik.http.routers.minio-api.middlewares: default-whitelist@file
+      # traefik.http.routers.minio-api.middlewares: default-whitelist@file
       traefik.http.routers.minio-api.service: minio-api-svc
 
 networks:
