@@ -215,3 +215,4 @@ terraform.rc
 n
 dataops/docker/.restic-password
 dataops/systemd/restic-docker-compose/.restic-password
+.envrc
