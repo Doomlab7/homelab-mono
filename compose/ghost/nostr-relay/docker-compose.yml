@@ -1,6 +1,6 @@
 services:
   nostr-relay:
-    image: nostr-rs-relay:latest
+    image: scsibug/nostr-rs-relay:latest
     container_name: nostr-relay
     ports:
       - "7000:8080"
@@ -14,11 +14,11 @@ services:
       - phantomlink
     labels:
       traefik.enable: "true"
-      traefik.http.routers.nostr.rule: Host(`nostr.paynepride.com`)
+      traefik.http.routers.nostr.rule: Host(`n.paynepride.com`)
       traefik.http.routers.nostr.tls.certresolver: letsencrypt
       traefik.http.routers.nostr.tls.domains[0].main: "paynepride.com"
       traefik.http.routers.nostr.tls.domains[0].sans: "*.paynepride.com"
-      traefik.http.routers.nostr.middlewares: default-whitelist@file
+      # traefik.http.routers.nostr.middlewares: default-whitelist@file
       traefik.http.services.nostr.loadbalancer.server.port: 8080
 networks:
   phantomlink:
