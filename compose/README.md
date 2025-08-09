@@ -2,7 +2,7 @@
 
 My repository for the application that I use docker compose stacks to run "in production"
 
-My development stuff is in my [dev repo](https://github.com/pypeaday/homelab-dev)
+~~My development stuff is in my [dev repo](https://github.com/pypeaday/homelab-dev)--
 
 ## Monitoring
 

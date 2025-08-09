@@ -1,5 +1,7 @@
 # Homelab Terraform
 
+NOTE: Using Open Tofu, not Terraform
+
 Repo to house terraform configuration for all my projects in my homelab. I was using spacelift for DigitalHarbor but I'm pulling out of that to just manage at home.
 
 > State stored in self-hosted minio bucket
