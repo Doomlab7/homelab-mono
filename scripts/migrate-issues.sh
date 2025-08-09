@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# I used this when migrating the Quadtask issues to Kanboard
+
 # GitHub to Kanboard Issue Migration Script
 # Uses GitHub CLI (gh) and curl to migrate issues
 
