@@ -1,0 +1,126 @@
+services:
+  nginx:
+    image: nginxinc/nginx-unprivileged:1.27.5-alpine
+    ports:
+      - "9080:8080"
+    volumes:
+      - /tank/encrypted/docker/repoflow-zfs/nginx/conf/conf.d:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - server
+      - client
+      - hasura
+    deploy:
+      replicas: 1
+    networks:
+      - repoflow-net
+
+  client:
+    image: api.repoflow.io/repoflow-public/docker-public/library/repoflow-client:0.6.5
+    volumes:
+      - /tank/encrypted/docker/repoflow-zfs/client/env.js:/usr/share/nginx/html/env.js:ro
+      - /tank/encrypted/docker/repoflow-zfs/client/analytics.js:/usr/share/nginx/html/analytics.js:ro
+    environment:
+      - HASURA_API_URL=http://hasura:8080/v1/graphql
+      - FRONTEND_URL=http://nginx:8080
+    deploy:
+      replicas: 1
+    networks:
+      - repoflow-net
+
+  server:
+    image: api.repoflow.io/repoflow-public/docker-public/library/repoflow-server:0.6.5
+    environment:
+      - IS_PRINT_ENV=true
+      - SERVER_PORT=3000
+      - SERVER_URL=http://localhost:9080/api
+      - FRONTEND_URL=http://localhost:9080
+      - TMP_FOLDER=/tmp
+      - COOKIE_DOMAIN=localhost
+      - COOKIE_SECURE=false
+      - COOKIE_SAME_SITE=strict
+      - COOKIE_HTTP_ONLY=true
+      - GENERAL_COOKIE_SECRET=bi3ninEIFB39BIQNWEAIDPAOEJNFIJ200DNr92biBNDF
+      - S3_ACCESS_KEY=AkIAIOS1Dasd1asfas21eODNN7EXPLE
+      - S3_SECRET_KEY=d716g2s7!@1da89QD1N98AS8h19s
+      - S3_USE_SSL=false
+      - S3_PORT=9000
+      - S3_END_POINT=minio
+      - S3_BUCKET=repoflow
+      - S3_USE_PRE_SIGNED_URL=false
+      - HASURA_URL=http://hasura:8080/v1/graphql
+      - HASURA_URL_REST=http://hasura:8080/api/rest
+      - HASURA_ADMIN_SECRET=af5da89af9cd2!42b3%$9d34$ec34d02bc621
+      - IS_SMART_SEARCH_ENABLED=false
+      - DEFAULT_SEARCH_LIMIT=10
+      - IS_REDIS_ENABLED=false
+      - IS_REMOTE_CACHE_ENABLED=true
+      - JWT_SECRET=d09dj109jqshf8m1d9139r93djd9j1d9j209dj1
+      - RESET_PASSWORD_JWT_SECRET=98b3dn87q6ND98Q3BD8676bn8D98MdMD9d97nD9873D9173BD97
+      - PERSONAL_ACCESS_TOKEN_JWT_SECRET=9HFN87bv8cwhef8b249cbwegvc72G8F7V84BC8RHCB83g9cbcb
+      - COOKIE_EXPIRY_IN_SECONDS=2592000
+      - JWS_ALGORITHM=HS256
+      - DEFAULT_ADMIN_USER_NAME=admin
+      - DEFAULT_ADMIN_PASSWORD=password
+    volumes:
+      - server-logs:/var/log/repoflow
+      - grype-db:/srv/vulnerabilitiesScanning
+    depends_on:
+      - hasura
+    deploy:
+      replicas: 1
+    networks:
+      - repoflow-net
+
+  postgresql:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: repoflow
+    volumes:
+      - /tank/encrypted/docker/repoflow-zfs/postgresql/data:/var/lib/postgresql/data
+    deploy:
+      replicas: 1
+    networks:
+      - repoflow-net
+
+  minio:
+    image: minio/minio:RELEASE.2025-07-23T15-54-02Z
+    environment:
+      - MINIO_ROOT_USER=AkIAIOS1Dasd1asfas21eODNN7EXPLE
+      - MINIO_ROOT_PASSWORD=d716g2s7!@1da89QD1N98AS8h19s
+    volumes:
+      - /tank/encrypted/docker/repoflow-zfs/minio:/data
+    deploy:
+      replicas: 1
+    networks:
+      - repoflow-net
+
+  hasura:
+    image: hasura/graphql-engine:v2.48.1
+    environment:
+      - HASURA_GRAPHQL_ENABLE_CONSOLE=true
+      - HASURA_GRAPHQL_DEV_MODE=true
+      - HASURA_GRAPHQL_ENABLED_LOG_TYPES=startup,http-log,webhook-log,websocket-log,query-log
+      - HASURA_GRAPHQL_ENABLE_TELEMETRY=false
+      - HASURA_GRAPHQL_ADMIN_SECRET=af5da89af9cd2!42b3%$9d34$ec34d02bc621
+      - HASURA_GRAPHQL_UNAUTHORIZED_ROLE=anonymous
+      - HASURA_GRAPHQL_METADATA_DATABASE_URL=postgres://user:password@postgresql:5432/repoflow
+      - HASURA_GRAPHQL_DATABASE_URL=postgres://user:password@postgresql:5432/repoflow
+      
+      # - HASURA_GRAPHQL_JWT_SECRET="{\"key\":\"d09dj109jqshf8m1d9139r93djd9j1d9j209dj1\",\"type\":\"HS256\", \"header\":{\"type\": \"Cookie\", \"name\": \"X-USER-TOKEN\"}}"
+    env_file: .env
+    depends_on:
+      - postgresql
+    deploy:
+      replicas: 1
+    networks:
+      - repoflow-net
+
+networks:
+  repoflow-net:
+    driver: bridge
+
+volumes:
+  server-logs:
+  grype-db:
