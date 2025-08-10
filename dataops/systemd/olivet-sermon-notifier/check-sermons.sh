@@ -93,21 +93,24 @@ while true; do
     # Filter out directories and system entries, keep only regular files
     FILE_ENTRIES=$(echo "$NEW_FILES" | grep -v "^d" | grep -v "^total" | grep -v "^\.$" | grep -v "^\.\.")
 
-    # Count how many actual files (non-empty lines)
-    NEW_COUNT=$(echo "$FILE_ENTRIES" | grep -v "^$" | wc -l)
+    # Extract filenames and keep only .mp3 files (case-insensitive)
+    FILE_NAMES=$(echo "$FILE_ENTRIES" | awk '{print $NF}' | grep -Ei '\.mp3$')
+
+    # Count how many matching mp3 files (non-empty lines)
+    NEW_COUNT=$(echo "$FILE_NAMES" | grep -v "^$" | wc -l)
 
     # Only proceed if we have actual files
     if [ "$NEW_COUNT" -gt 0 ]; then
       # Create notification message
       if [ "$NEW_COUNT" -eq 1 ]; then
         TITLE="New Sermon File Added"
-        # Extract filename from listing line
-        FILENAME=$(echo "$FILE_ENTRIES" | awk '{print $NF}')
+        # Extract filename from filtered list
+        FILENAME=$(echo "$FILE_NAMES")
         MESSAGE="New sermon file detected: $FILENAME"
       else
         TITLE="New Sermon Files Added"
         # Format filenames only for readability
-        FILELIST=$(echo "$FILE_ENTRIES" | awk '{print $NF}' | sort)
+        FILELIST=$(echo "$FILE_NAMES" | sort)
         MESSAGE="$NEW_COUNT new sermon files detected:\n$FILELIST"
       fi
 
