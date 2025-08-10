@@ -4,6 +4,15 @@ services:
     ports:
       # 5055 taken by jellyseer atm
       - "5056:5055"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.audiomass.rule: Host(`audiomass.paynepride.com`)
+      traefik.http.routers.audiomass.tls.certresolver: letsencrypt
+      traefik.http.routers.audiomass.tls.domains[0].main: "paynepride.com"
+      traefik.http.routers.audiomass.tls.domains[0].sans: "*.paynepride.com"
+      traefik.http.services.audiomass.loadbalancer.server.port: "5055"
+    networks:
+      - phantomlink
   gh-star-sorter:
     image: registry.paynepride.com/gh-star-sorter:latest
     ports:
