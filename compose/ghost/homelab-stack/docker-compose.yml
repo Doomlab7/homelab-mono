@@ -1,4 +1,9 @@
 services:
+  audiomass:
+    image: registry.paynepride.com/audiomass:latest
+    ports:
+      # 5055 taken by jellyseer atm
+      - "5056:5055"
   gh-star-sorter:
     image: registry.paynepride.com/gh-star-sorter:latest
     ports:
