@@ -15,7 +15,7 @@ services:
       - repoflow-net
 
   client:
-    image: api.repoflow.io/repoflow-public/docker-public/library/repoflow-client:0.6.5
+    image: api.repoflow.io/repoflow-public/docker-public/library/repoflow-client:0.7.0-rc1
     volumes:
       - /tank/encrypted/docker/repoflow-zfs/client/env.js:/usr/share/nginx/html/env.js:ro
       - /tank/encrypted/docker/repoflow-zfs/client/analytics.js:/usr/share/nginx/html/analytics.js:ro
@@ -28,7 +28,7 @@ services:
       - repoflow-net
 
   server:
-    image: api.repoflow.io/repoflow-public/docker-public/library/repoflow-server:0.6.5
+    image: api.repoflow.io/repoflow-public/docker-public/library/repoflow-server:0.7.0-rc1
     environment:
       - IS_PRINT_ENV=true
       - SERVER_PORT=3000
