@@ -1,0 +1,9 @@
+deploy:
+  #!/bin/bash
+  set -e
+  ssh ghost "mkdir -p /tank/encrypted/docker/repoflow-zfs/{client,nginx/conf,postgresql,minio}"
+  scp ./client/analytics.js ghost:/tank/encrypted/docker/repoflow-zfs/client/analytics.js
+  scp ./client/env.js ghost:/tank/encrypted/docker/repoflow-zfs/client/env.js
+  scp ./nginx/conf/conf.d ghost:/tank/encrypted/docker/repoflow-zfs/nginx/conf/conf.d
+  docker context use ghost
+  docker compose up

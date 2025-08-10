@@ -32,10 +32,10 @@ services:
     environment:
       - IS_PRINT_ENV=true
       - SERVER_PORT=3000
-      - SERVER_URL=http://localhost:9080/api
-      - FRONTEND_URL=http://localhost:9080
+      - SERVER_URL=http://ghost:9080/api
+      - FRONTEND_URL=http://ghost:9080
       - TMP_FOLDER=/tmp
-      - COOKIE_DOMAIN=localhost
+      - COOKIE_DOMAIN=ghost
       - COOKIE_SECURE=false
       - COOKIE_SAME_SITE=strict
       - COOKIE_HTTP_ONLY=true
@@ -91,6 +91,7 @@ services:
       - MINIO_ROOT_PASSWORD=d716g2s7!@1da89QD1N98AS8h19s
     volumes:
       - /tank/encrypted/docker/repoflow-zfs/minio:/data
+    command: server /data --console-address ":9001"
     deploy:
       replicas: 1
     networks:
