@@ -15,7 +15,7 @@ services:
       - repoflow-net
 
   client:
-    image: api.repoflow.io/repoflow-public/docker-public/library/repoflow-client:0.7.0-rc1
+    image: api.repoflow.io/repoflow-public/docker-public-beta/library/repoflow-client:0.7.0-rc1.2
     volumes:
       - /tank/encrypted/docker/repoflow-zfs/client/env.js:/usr/share/nginx/html/env.js:ro
       - /tank/encrypted/docker/repoflow-zfs/client/analytics.js:/usr/share/nginx/html/analytics.js:ro
@@ -28,17 +28,23 @@ services:
       - repoflow-net
 
   server:
-    image: api.repoflow.io/repoflow-public/docker-public/library/repoflow-server:0.7.0-rc1
+    image: api.repoflow.io/repoflow-public/docker-public-beta/library/repoflow-server:0.7.0-rc1.2
     environment:
       - IS_PRINT_ENV=true
       - SERVER_PORT=3000
-      - SERVER_URL=http://ghost:9080/api
-      - FRONTEND_URL=http://ghost:9080
+      # - SERVER_URL=http://ghost:9080/api
+      # - FRONTEND_URL=http://ghost:9080
+      - SERVER_URL=https://repoflow.paynepride.com/api
+      - FRONTEND_URL=https://repoflow.paynepride.com
       - TMP_FOLDER=/tmp
-      - COOKIE_DOMAIN=ghost
-      - COOKIE_SECURE=false
+      - CONSOLE_LOG_LEVEL=verbose
+      # - COOKIE_DOMAIN=ghost
+      - COOKIE_DOMAIN=paynepride.com
+      # - COOKIE_SECURE=false
+      - COOKIE_SECURE=true
       - COOKIE_SAME_SITE=strict
-      - COOKIE_HTTP_ONLY=true
+      # - COOKIE_HTTP_ONLY=true
+      - COOKIE_HTTP_ONLY=false
       - GENERAL_COOKIE_SECRET=bi3ninEIFB39BIQNWEAIDPAOEJNFIJ200DNr92biBNDF
       - S3_ACCESS_KEY=AkIAIOS1Dasd1asfas21eODNN7EXPLE
       - S3_SECRET_KEY=d716g2s7!@1da89QD1N98AS8h19s
