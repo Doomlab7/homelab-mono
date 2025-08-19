@@ -32,7 +32,7 @@ services:
       traefik.http.routers.affine.tls.domains[0].main: "paynepride.com"
       traefik.http.routers.affine.tls.domains[0].sans: "*.paynepride.com"
       traefik.http.services.affine.loadbalancer.server.port: "3010"
-      traefik.http.routers.affine.middlewares: default-whitelist@file
+      # traefik.http.routers.affine.middlewares: default-whitelist@file
 
   affine_migration:
     image: ghcr.io/toeverything/affine-graphql:${AFFINE_REVISION:-stable}
