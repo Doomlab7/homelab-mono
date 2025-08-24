@@ -1,0 +1,96 @@
+networks:
+  phantomlink:
+    external: true
+services:
+  speakr:
+    image: learnedmachine/speakr:latest
+    container_name: speakr
+    restart: unless-stopped
+    ports:
+      - "8899:8899"
+    env_file:
+      - .env
+    volumes:
+      - /home/nic/docker-volume-data/speakr/uploads:/data/uploads
+      - /home/nic/docker-volume-data/speakr/instance:/data/instance
+      # NOTE: to get transcriptions and summaries of sermons
+      # NOTE: this is on ghost: would need to scp files over or run container on other node
+      # - /tank/encrypted/docker/nextcloud-zfs/nextcloud/data/__groupfolders/1/Sermons/Raw Upload:/data/auto-process:ro
+    networks:
+      - phantomlink
+
+  whisper_asr:
+    image: onerahmet/openai-whisper-asr-webservice:latest-gpu
+    volumes:
+      - /tmp:/tmp
+    environment:
+      - ASR_MODEL=base
+      - ASR_ENGINE=openai_whisper
+      # for speaker diarization but it's not working rn: https://github.com/ahmetoner/whisper-asr-webservice/issues/338
+      # - ASR_ENGINE=whisperx
+    ports:
+      - "9099:9000"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: ["gpu"]
+    networks:
+      - phantomlink
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:cuda
+    container_name: open-webui
+    restart: always
+    ports:
+      - "3002:8080"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: ["gpu"]
+    # network_mode: service:ts-open-webui
+    # depends_on:
+    #   - ts-open-webui
+    networks:
+      - phantomlink
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434
+    volumes:
+      - /home/nic/docker-volume-data/open-webui/open-webui:/app/backend/data
+      - /home/nic/docker-volume-data/open-webui/tailscale:/var/lib/tailscale
+  # ts-open-webui:
+  #   image: tailscale/tailscale:latest
+  #   hostname: open-webui
+  #   env_file: .env
+  #   environment:
+  #     - TS_STATE_DIR=/var/lib/tailscale
+  #   volumes:
+  #     - /home/nic/docker-volume-data/tailscale:/var/lib/tailscale
+  #   devices:
+  #     - /dev/net/tun:/dev/net/tun
+  #   cap_add:
+  #     - net_admin
+  #     - sys_module
+  #   restart: unless-stopped
+  ollama:
+    volumes:
+      - /home/nic/docker-volume-data/ollama/ollama:/root/.ollama
+    container_name: ollama
+    # pull_policy: always
+    tty: true
+    restart: unless-stopped
+    image: ollama/ollama:latest
+    ports:
+      - 11434:11434
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_NUM_PARALLEL=4
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - phantomlink

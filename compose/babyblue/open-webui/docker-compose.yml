@@ -1,39 +1,39 @@
-services:
-  open-webui:
-    image: ghcr.io/open-webui/open-webui:cuda
-    container_name: open-webui
-    restart: always
-    ports:
-      - "3002:8080"
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - capabilities: ["gpu"]
-    # network_mode: service:ts-open-webui
-    # depends_on:
-    #   - ts-open-webui
-    networks:
-      - phantomlink
-    environment:
-      OLLAMA_BASE_URL: http://ollama:11434
-    volumes:
-      - /home/nic/docker-volume-data/open-webui/open-webui:/app/backend/data
-      - /home/nic/docker-volume-data/open-webui/tailscale:/var/lib/tailscale
-networks:
-  phantomlink:
-    external: true
-  # ts-open-webui:
-  #   image: tailscale/tailscale:latest
-  #   hostname: open-webui
-  #   env_file: .env
-  #   environment:
-  #     - TS_STATE_DIR=/var/lib/tailscale
-  #   volumes:
-  #     - /home/nic/docker-volume-data/tailscale:/var/lib/tailscale
-  #   devices:
-  #     - /dev/net/tun:/dev/net/tun
-  #   cap_add:
-  #     - net_admin
-  #     - sys_module
-  #   restart: unless-stopped
+# services:
+#   open-webui:
+#     image: ghcr.io/open-webui/open-webui:cuda
+#     container_name: open-webui
+#     restart: always
+#     ports:
+#       - "3002:8080"
+#     deploy:
+#       resources:
+#         reservations:
+#           devices:
+#             - capabilities: ["gpu"]
+#     # network_mode: service:ts-open-webui
+#     # depends_on:
+#     #   - ts-open-webui
+#     networks:
+#       - phantomlink
+#     environment:
+#       OLLAMA_BASE_URL: http://ollama:11434
+#     volumes:
+#       - /home/nic/docker-volume-data/open-webui/open-webui:/app/backend/data
+#       - /home/nic/docker-volume-data/open-webui/tailscale:/var/lib/tailscale
+# networks:
+#   phantomlink:
+#     external: true
+#   # ts-open-webui:
+#   #   image: tailscale/tailscale:latest
+#   #   hostname: open-webui
+#   #   env_file: .env
+#   #   environment:
+#   #     - TS_STATE_DIR=/var/lib/tailscale
+#   #   volumes:
+#   #     - /home/nic/docker-volume-data/tailscale:/var/lib/tailscale
+#   #   devices:
+#   #     - /dev/net/tun:/dev/net/tun
+#   #   cap_add:
+#   #     - net_admin
+#   #     - sys_module
+#   #   restart: unless-stopped
