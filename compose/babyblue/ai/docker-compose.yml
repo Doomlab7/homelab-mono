@@ -21,22 +21,26 @@ services:
 
   whisper_asr:
     image: onerahmet/openai-whisper-asr-webservice:latest-gpu
-    volumes:
-      - /tmp:/tmp
-    environment:
-      - ASR_MODEL=base
-      - ASR_ENGINE=openai_whisper
-      # for speaker diarization but it's not working rn: https://github.com/ahmetoner/whisper-asr-webservice/issues/338
-      # - ASR_ENGINE=whisperx
+    # container_name: whisper-asr-webservice
     ports:
-      - "9099:9000"
+      - "9099:9000"  # Maps host port 9099 to container port 9000
+    environment:
+      - ASR_MODEL=distil-large-v3
+      - ASR_COMPUTE_TYPE=int8
+      - ASR_ENGINE=whisperx
+      # - HF_TOKEN=your_huggingface_token_here  # Required for diarization models
+    env_file: .env
     deploy:
       resources:
         reservations:
           devices:
-            - capabilities: ["gpu"]
+            - driver: nvidia
+              capabilities: [gpu]
+              # device_ids: ["0"]  # Adjust GPU ID as needed
+    restart: unless-stopped
     networks:
       - phantomlink
+
   open-webui:
     image: ghcr.io/open-webui/open-webui:cuda
     container_name: open-webui
