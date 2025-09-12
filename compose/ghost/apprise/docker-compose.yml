@@ -1,7 +1,6 @@
 services:
-  apprise:
-    image: registry.paynepride.com/apprise:latest
-    container_name: apprise
+  apprise-api:
+    image: registry.paynepride.com/apprise-api:latest
     environment:
       - APPRISE_STATEFUL_MODE=simple
     ports:
