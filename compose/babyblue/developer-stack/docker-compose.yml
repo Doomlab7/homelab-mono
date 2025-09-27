@@ -8,13 +8,21 @@ services:
       - ./mcp_settings.json:/app/mcp_settings.json
       - /home/nic/docker-volume-data//mcphub/data:/app/data
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - phantomlink
   qdrant:
     image: qdrant/qdrant
     container_name: qdrant
     restart: unless-stopped
+    networks:
+      - phantomlink
     ports:
       - "6333:6333"
     deploy:
       resources:
         limits:
           memory: "500m"
+
+networks:
+  phantomlink:
+    external: true
