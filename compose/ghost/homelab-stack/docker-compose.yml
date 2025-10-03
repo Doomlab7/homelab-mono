@@ -40,8 +40,8 @@ services:
       - "8078:8000"
     environment:
       - OLLAMA_HOST=http://babyblue-aurora:11434
-      - OLLAMA_MODEL=qwen2:7b-instruct-q5_K_M
-      # - OLLAMA_MODEL=dad-can-i-wear-this
+      # - OLLAMA_MODEL=qwen2:7b-instruct-q5_K_M
+      - OLLAMA_MODEL=dad-can-i-wear-this
 
     # depends_on:
     #   - ollama
