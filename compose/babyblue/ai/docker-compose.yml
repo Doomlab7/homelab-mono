@@ -23,7 +23,7 @@ services:
     image: onerahmet/openai-whisper-asr-webservice:latest-gpu
     # container_name: whisper-asr-webservice
     ports:
-      - "9099:9000"  # Maps host port 9099 to container port 9000
+      - "9099:9000" # Maps host port 9099 to container port 9000
     environment:
       - ASR_MODEL=distil-large-v3
       - ASR_COMPUTE_TYPE=int8
